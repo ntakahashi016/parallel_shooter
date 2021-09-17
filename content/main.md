@@ -1,9 +1,3 @@
----
-title: ""
-date: 2021-09-17T21:36:33+09:00
-draft: true
----
-
 <!DOCTYPE html>
 <script src="wasm_exec.js"></script>
 <script>
@@ -16,7 +10,7 @@ if (!WebAssembly.instantiateStreaming) {
 }
 
 const go = new Go();
-WebAssembly.instantiateStreaming(fetch("yourgame.wasm"), go.importObject).then(result => {
+WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then(result => {
   go.run(result.instance);
 });
 </script>
