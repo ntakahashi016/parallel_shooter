@@ -180,17 +180,32 @@ func (i *Input) Update() {
 	}
 }
 
+func repeatingKeyPressed(key ebiten.Key) bool {
+	const (
+		delay    = 10
+		interval = 1
+	)
+	d := inpututil.KeyPressDuration(key)
+	if d == 1 {
+		return true
+	}
+	if d >= delay && (d-delay)%interval == 0 {
+		return true
+	}
+	return false
+}
+
 func (i *Input) Dir() (Dir, bool) {
-	if inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) {
+	if repeatingKeyPressed(ebiten.KeyArrowUp) {
 		return DirUp, true
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyArrowLeft) {
+	if repeatingKeyPressed(ebiten.KeyArrowLeft) {
 		return DirLeft, true
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyArrowRight) {
+	if repeatingKeyPressed(ebiten.KeyArrowRight) {
 		return DirRight, true
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyArrowDown) {
+	if repeatingKeyPressed(ebiten.KeyArrowDown) {
 		return DirDown, true
 	}
 	if i.mouseState == mouseStateSettled {
@@ -203,7 +218,7 @@ func (i *Input) Dir() (Dir, bool) {
 }
 
 func (i *Input) Key() (Key, bool) {
-	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+	if repeatingKeyPressed(ebiten.KeySpace) {
 		return KeySpace, true
 	}
 	return 0, false
