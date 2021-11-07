@@ -5,23 +5,22 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+const width = 320
+const height = 240
+
 type Game struct{
-	player   *Player
-	playerImage *ebiten.Image
 	objects map[interface{}]*ebiten.Image
-	enemy *Charactor
-	enemyImage *ebiten.Image
 }
 
 func NewGame() (*Game, error) {
 	g := &Game{}
 	g.objects = map[interface{}]*ebiten.Image{}
-	g.player = NewPlayer(160,200,10,10,true,10,10,NewInput(),g)
-	g.playerImage = ebiten.NewImage(g.player.height, g.player.width)
-	g.objects[g.player] = g.playerImage
-	g.enemy = NewCharactor(100,100,10,10,true,10,10)
-	g.enemyImage = ebiten.NewImage(g.enemy.height, g.enemy.width)
-	g.objects[g.enemy] = g.enemyImage
+	p := NewPlayer(160,200,10,10,true,10,10,NewInput(),g)
+	pImg := ebiten.NewImage(p.height, p.width)
+	g.objects[p] = pImg
+	e := NewCharactor(100,100,10,10,true,10,10)
+	eImg := ebiten.NewImage(e.height, e.width)
+	g.objects[e] = eImg
 	return g, nil
 }
 
@@ -29,6 +28,9 @@ func (g *Game) Update() error {
 	for o, _ := range g.objects {
 		c := o.(common)
 		c.Update()
+		if g.outOfScreen(c.getx(), c.gety()) {
+			c = nil
+		}
 	}
 	return nil
 }
@@ -46,9 +48,17 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return 320, 240
+	var w int = width
+	var h int = height
+	return w, h
 }
 
 func (g *Game) setObject(o interface{}, i *ebiten.Image) {
 	g.objects[o] = i
+}
+
+func (g *Game) outOfScreen(x,y int) bool {
+	if x < 0 || width <= x { return true }
+	if y < 0 || height <= y { return true }
+	return false
 }
