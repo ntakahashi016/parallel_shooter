@@ -5,12 +5,19 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+type common interface {
+	Update() error
+	Draw(img *ebiten.Image) error
+	getx() int
+	gety() int
+}
+
 type Charactor struct {
+	common
 	Object
 	hp int
 	score int
 	value int
-	Controllable
 }
 
 func NewCharactor(x,y,h,w int, p bool, hp, v int) *Charactor {
@@ -29,17 +36,7 @@ func NewCharactor(x,y,h,w int, p bool, hp, v int) *Charactor {
 	return c
 }
 
-func (c *Charactor) command(dir Dir) error {
-	switch dir {
-	case DirUp:
-		c.y = c.y - 1
-	case DirLeft:
-		c.x = c.x - 1
-	case DirRight:
-		c.x = c.x + 1
-	case DirDown:
-		c.y = c.y + 1
-	}
+func (c *Charactor) Update() error {
 	return nil
 }
 

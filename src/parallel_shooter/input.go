@@ -5,19 +5,14 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-type Key int
+type Command int
 
 const (
-	KeySpace Key = iota
-)
-
-type Dir int
-
-const (
-	DirUp Dir = iota
+	DirUp Command = iota
 	DirRight
 	DirDown
 	DirLeft
+	KeySpace
 )
 
 type mouseState int
@@ -37,8 +32,8 @@ const (
 	touchStateInvalid
 )
 
-func (d Dir) String() string {
-	switch d {
+func (c Command) String() string {
+	switch c {
 	case DirUp:
 		return "Up"
 	case DirRight:
@@ -47,12 +42,14 @@ func (d Dir) String() string {
 		return "Down"
 	case DirLeft:
 		return "Left"
+	case KeySpace:
+		return "Shot"
 	}
 	panic("not reach")
 }
 
-func (d Dir) Vector() (x, y int) {
-	switch d {
+func (c Command) Vector() (x, y int) {
+	switch c {
 	case DirUp:
 		return 0, -1
 	case DirRight:
@@ -69,7 +66,7 @@ type Input struct {
 	mouseState    mouseState
 	mouseInitPosX int
 	mouseInitPosY int
-	mouseDir      Dir
+	mouseDir      Command
 
 	touches       []ebiten.TouchID
 	touchState    touchState
@@ -78,7 +75,7 @@ type Input struct {
 	touchInitPosY int
 	touchLastPosX int
 	touchLastPosY int
-	touchDir      Dir
+	touchDir      Command
 }
 
 func NewInput() *Input {
@@ -92,7 +89,7 @@ func abs(x int) int {
 	return x
 }
 
-func vecToDir(dx, dy int) (Dir, bool) {
+func vecToDir(dx, dy int) (Command, bool) {
 	if abs(dx) < 4 && abs(dy) < 4 {
 		return 0, false
 	}
@@ -182,7 +179,7 @@ func (i *Input) Update() {
 
 func repeatingKeyPressed(key ebiten.Key) bool {
 	const (
-		delay    = 10
+		delay    = 1
 		interval = 1
 	)
 	d := inpututil.KeyPressDuration(key)
@@ -195,7 +192,7 @@ func repeatingKeyPressed(key ebiten.Key) bool {
 	return false
 }
 
-func (i *Input) Dir() (Dir, bool) {
+func (i *Input) getCommand() (Command, bool) {
 	if repeatingKeyPressed(ebiten.KeyArrowUp) {
 		return DirUp, true
 	}
@@ -214,12 +211,9 @@ func (i *Input) Dir() (Dir, bool) {
 	if i.touchState == touchStateSettled {
 		return i.touchDir, true
 	}
-	return 0, false
-}
-
-func (i *Input) Key() (Key, bool) {
 	if repeatingKeyPressed(ebiten.KeySpace) {
 		return KeySpace, true
 	}
 	return 0, false
 }
+

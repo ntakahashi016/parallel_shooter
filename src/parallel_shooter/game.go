@@ -3,46 +3,45 @@ package parallel_shooter
 import (
 	"image/color"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type Game struct{
-	input    *Input
-	message  string
-	player   *Charactor
+	player   *Player
 	playerImage *ebiten.Image
+	objects map[interface{}]*ebiten.Image
+	enemy *Charactor
+	enemyImage *ebiten.Image
 }
 
 func NewGame() (*Game, error) {
-	g := &Game{
-		input: NewInput(),
-		message: "Hello World!",
-	}
-	g.player = NewCharactor(50,50,10,10,true,10,10)
+	g := &Game{}
+	g.objects = map[interface{}]*ebiten.Image{}
+	g.player = NewPlayer(160,200,10,10,true,10,10,NewInput(),g)
 	g.playerImage = ebiten.NewImage(g.player.height, g.player.width)
+	g.objects[g.player] = g.playerImage
+	g.enemy = NewCharactor(100,100,10,10,true,10,10)
+	g.enemyImage = ebiten.NewImage(g.enemy.height, g.enemy.width)
+	g.objects[g.enemy] = g.enemyImage
 	return g, nil
 }
 
 func (g *Game) Update() error {
-	if dir, ok := g.input.Dir(); ok {
-		g.message = dir.String()
-		g.player.command(dir)
+	for o, _ := range g.objects {
+		c := o.(common)
+		c.Update()
 	}
-	// if key, ok := g.input.Key(); ok {
-	// 	g.player.command(key)
-	// }
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{0x00, 0x00, 0x00, 0xff})
-	g.player.Draw(g.playerImage)
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(g.player.getx()), float64(g.player.gety()))
-	screen.DrawImage(g.playerImage,op)
-	ebitenutil.DebugPrintAt(screen, g.message, 0, 0)
-	if _, ok := g.input.Key(); ok {
-		ebitenutil.DebugPrintAt(screen, "shot!", 0, 20)
+
+	for o, i := range g.objects {
+		c := o.(common)
+		c.Draw(i)
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(float64(c.getx()), float64(c.gety()))
+		screen.DrawImage(i,op)
 	}
 }
 
@@ -50,3 +49,6 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 	return 320, 240
 }
 
+func (g *Game) setObject(o interface{}, i *ebiten.Image) {
+	g.objects[o] = i
+}
