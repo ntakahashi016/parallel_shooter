@@ -10,6 +10,7 @@ type common interface {
 	Draw(img *ebiten.Image) error
 	getx() int
 	gety() int
+	getArea() *Area
 }
 
 type Charactor struct {
@@ -47,3 +48,4 @@ func (c *Charactor) Draw(img *ebiten.Image) error {
 
 func (c *Charactor) getx() int { return c.x }
 func (c *Charactor) gety() int { return c.y }
+func (c *Charactor) getArea() *Area { return NewArea(NewPoint(c.x, c.y), NewPoint(c.x+c.width, c.y+c.height)) }
