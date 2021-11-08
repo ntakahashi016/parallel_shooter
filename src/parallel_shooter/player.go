@@ -43,7 +43,9 @@ func (p *Player) command(cmd Command) error {
 	case DirDown:
 		p.y = p.y + 1
 	case KeySpace:
-		p.game.setObject(newShot(p.x,p.y,5,5,p.phase,0,0,1),ebiten.NewImage(5,5))
+		shot := newShot(p.x,p.y,5,5,p.phase,0,5,1)
+		shot.addEnemy(p.game.e)
+		p.game.setObject(shot, ebiten.NewImage(5,5))
 	}
 	return nil
 }
@@ -62,3 +64,4 @@ func (p *Player) Draw(img *ebiten.Image) error {
 
 func (p *Player) getx() int { return p.x }
 func (p *Player) gety() int { return p.y }
+func (p *Player) getArea() *Area { return NewArea(NewPoint(p.x, p.y), NewPoint(p.x+p.width, p.y+p.height)) }

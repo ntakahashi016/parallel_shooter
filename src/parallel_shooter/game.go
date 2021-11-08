@@ -10,6 +10,7 @@ const height = 240
 
 type Game struct{
 	objects map[interface{}]*ebiten.Image
+	e *Charactor
 }
 
 func NewGame() (*Game, error) {
@@ -21,6 +22,7 @@ func NewGame() (*Game, error) {
 	e := NewCharactor(100,100,10,10,true,10,10)
 	eImg := ebiten.NewImage(e.height, e.width)
 	g.objects[e] = eImg
+	g.e = e
 	return g, nil
 }
 
