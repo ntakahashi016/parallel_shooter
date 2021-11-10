@@ -7,28 +7,23 @@ import (
 
 type Player struct {
 	common
+	Object
 	Charactor
 	input *Input
-	game *Game
 }
 
-func NewPlayer(x,y,h,w int, p bool, hp, v int, i *Input, g *Game) *Player {
-	pl := &Player{
-		Charactor: Charactor{
-			Object: Object{
-				x: x,
-				y: y,
-				height: h,
-				width: w,
-				phase: p,
-			},
-			hp: hp,
-			value: v,
-			score: 0,
-		},
-		input: i,
-		game: g,
-	}
+func NewPlayer(x,y,h,w int, p bool, hp, v int, g *Game, i *Input) *Player {
+	pl := &Player{}
+	pl.x = x
+	pl.y = y
+	pl.height = h
+	pl.width = w
+	pl.phase = p
+	pl.hp = hp
+	pl.value = v
+	pl.score = 0
+	pl.game = g
+	pl.input = i
 	return pl
 }
 

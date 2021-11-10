@@ -6,7 +6,6 @@ import (
 )
 
 type Charactor struct {
-	common
 	Object
 	hp int
 	score int
@@ -15,19 +14,16 @@ type Charactor struct {
 }
 
 func NewCharactor(x,y,h,w int, p bool, hp, v int, g *Game) *Charactor {
-	c := &Charactor{
-		Object: Object{
-			x: x,
-			y: y,
-			height: h,
-			width: w,
-			phase: p,
-		},
-		hp: hp,
-		value: v,
-		score: 0,
-		game: g,
-	}
+	c := &Charactor{}
+	c.x = x
+	c.y = y
+	c.height = h
+	c.width = w
+	c.phase = p
+	c.hp = hp
+	c.value = v
+	c.score = 0
+	c.game = g
 	return c
 }
 

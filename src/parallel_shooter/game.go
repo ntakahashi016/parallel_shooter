@@ -15,12 +15,12 @@ type Game struct{
 func NewGame() (*Game, error) {
 	g := &Game{}
 	g.objects = map[interface{}]*ebiten.Image{}
-	p := NewPlayer(160,200,10,10,true,10,10,NewInput(), g)
+	p := NewPlayer(160,200,10,10,true,10,10, g, NewInput())
 	pImg := ebiten.NewImage(p.height, p.width)
+	g.objects[p] = pImg
 	e := NewCharactor(100,100,10,10,true,10,10, g)
 	eImg := ebiten.NewImage(e.height, e.width)
 	g.objects[e] = eImg
-	g.objects[p] = pImg
 	return g, nil
 }
 
