@@ -8,7 +8,7 @@ import (
 type Player struct {
 	common
 	Object
-	Charactor
+	Character
 	input *Input
 }
 

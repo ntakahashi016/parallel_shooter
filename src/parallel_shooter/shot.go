@@ -39,7 +39,7 @@ func (s *Shot)Update() error {
 	for _,o := range s.enemies {
 		e,_ := o.(common)
 		if hitArea.isHit(e.getArea()) {
-			e.hit(s.attack)
+			e.(Characteristic).hit(s.attack)
 			s.destroy()
 		}
 	}
@@ -54,11 +54,11 @@ func (s *Shot) getx() int { return s.x }
 func (s *Shot) gety() int { return s.y }
 func (s *Shot) getArea() *Area { return NewArea(NewPoint(s.x, s.y), NewPoint(s.x+s.width, s.y+s.height)) }
 
-func (s *Shot) addEnemy(e *Charactor) {
+func (s *Shot) addEnemy(e *Character) {
 	s.enemies = append(s.enemies, e)
 }
 
-func (s *Shot) deletEnemy(e *Charactor) {
+func (s *Shot) deletEnemy(e *Character) {
 	for _,v := range s.enemies {
 		if v == e {
 			v = nil

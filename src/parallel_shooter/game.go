@@ -18,7 +18,7 @@ func NewGame() (*Game, error) {
 	p := NewPlayer(160,200,10,10,true,10,10, g, NewInput())
 	pImg := ebiten.NewImage(p.height, p.width)
 	g.objects[p] = pImg
-	e := NewCharactor(100,100,10,10,true,10,10, g)
+	e := NewCharacter(100,100,10,10,true,10,10, g)
 	eImg := ebiten.NewImage(e.height, e.width)
 	g.objects[e] = eImg
 	return g, nil
@@ -67,11 +67,11 @@ func (g *Game) outOfScreen(x,y int) bool {
 	return false
 }
 
-func (g *Game) getEnemy() *Charactor {
+func (g *Game) getEnemy() *Character {
 	for k,_ := range g.objects {
 		switch k.(type) {
-		case *Charactor:
-			return k.(*Charactor)
+		case *Character:
+			return k.(*Character)
 		}
 	}
 	return nil
