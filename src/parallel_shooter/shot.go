@@ -10,11 +10,13 @@ type Shot struct {
 	Object
 	dir int
 	speed int
-	atack int
+	attack int
 	enemies []interface{}
+	image *ebiten.Image
+	game *Game
 }
 
-func newShot(x,y,h,w int, p bool, d,spd,a int) *Shot{
+func newShot(x,y,h,w int, p bool, d,spd,a int, i *ebiten.Image, g *Game) *Shot{
 	s := &Shot{}
 	s.x = x
 	s.y = y
@@ -23,8 +25,10 @@ func newShot(x,y,h,w int, p bool, d,spd,a int) *Shot{
 	s.phase = p
 	s.dir = d
 	s.speed = spd
-	s.atack = a
+	s.attack = a
 	s.enemies = nil
+	s.image = i
+	s.game = g
 	return s
 }
 
@@ -35,9 +39,8 @@ func (s *Shot)Update() error {
 	for _,o := range s.enemies {
 		e,_ := o.(common)
 		if hitArea.isHit(e.getArea()) {
-			s.speed = 0
-			s = nil
-			o = nil
+			e.hit(s.attack)
+			s.destroy()
 		}
 	}
 	return nil
@@ -61,4 +64,10 @@ func (s *Shot) deletEnemy(e *Charactor) {
 			v = nil
 		}
 	}
+}
+
+func (s *Shot) getImage() *ebiten.Image { return s.image }
+
+func (s *Shot) destroy() {
+	s.game.deleteObject(s)
 }

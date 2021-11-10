@@ -10,19 +10,17 @@ const height = 240
 
 type Game struct{
 	objects map[interface{}]*ebiten.Image
-	e *Charactor
 }
 
 func NewGame() (*Game, error) {
 	g := &Game{}
 	g.objects = map[interface{}]*ebiten.Image{}
-	p := NewPlayer(160,200,10,10,true,10,10,NewInput(),g)
+	p := NewPlayer(160,200,10,10,true,10,10,NewInput(), g)
 	pImg := ebiten.NewImage(p.height, p.width)
-	g.objects[p] = pImg
-	e := NewCharactor(100,100,10,10,true,10,10)
+	e := NewCharactor(100,100,10,10,true,10,10, g)
 	eImg := ebiten.NewImage(e.height, e.width)
 	g.objects[e] = eImg
-	g.e = e
+	g.objects[p] = pImg
 	return g, nil
 }
 
@@ -31,7 +29,7 @@ func (g *Game) Update() error {
 		c := o.(common)
 		c.Update()
 		if g.outOfScreen(c.getx(), c.gety()) {
-			c = nil
+			g.deleteObject(c)
 		}
 	}
 	return nil
@@ -59,8 +57,22 @@ func (g *Game) setObject(o interface{}, i *ebiten.Image) {
 	g.objects[o] = i
 }
 
+func (g *Game) deleteObject(o interface{}) {
+	delete(g.objects, o)
+}
+
 func (g *Game) outOfScreen(x,y int) bool {
 	if x < 0 || width <= x { return true }
 	if y < 0 || height <= y { return true }
 	return false
+}
+
+func (g *Game) getEnemy() *Charactor {
+	for k,_ := range g.objects {
+		switch k.(type) {
+		case *Charactor:
+			return k.(*Charactor)
+		}
+	}
+	return nil
 }

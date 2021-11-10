@@ -5,23 +5,16 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type common interface {
-	Update() error
-	Draw(img *ebiten.Image) error
-	getx() int
-	gety() int
-	getArea() *Area
-}
-
 type Charactor struct {
 	common
 	Object
 	hp int
 	score int
 	value int
+	game *Game
 }
 
-func NewCharactor(x,y,h,w int, p bool, hp, v int) *Charactor {
+func NewCharactor(x,y,h,w int, p bool, hp, v int, g *Game) *Charactor {
 	c := &Charactor{
 		Object: Object{
 			x: x,
@@ -33,6 +26,7 @@ func NewCharactor(x,y,h,w int, p bool, hp, v int) *Charactor {
 		hp: hp,
 		value: v,
 		score: 0,
+		game: g,
 	}
 	return c
 }
@@ -49,3 +43,14 @@ func (c *Charactor) Draw(img *ebiten.Image) error {
 func (c *Charactor) getx() int { return c.x }
 func (c *Charactor) gety() int { return c.y }
 func (c *Charactor) getArea() *Area { return NewArea(NewPoint(c.x, c.y), NewPoint(c.x+c.width, c.y+c.height)) }
+
+func (c *Charactor) hit(damage int) {
+	c.hp -= damage
+	if c.hp <= 0 {
+		c.destroy()
+	}
+}
+
+func (c *Charactor) destroy() {
+	c.game.deleteObject(c)
+}
