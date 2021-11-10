@@ -10,6 +10,7 @@ const height = 240
 
 type Game struct{
 	objects map[interface{}]*ebiten.Image
+	phase bool
 }
 
 func NewGame() (*Game, error) {
@@ -18,7 +19,8 @@ func NewGame() (*Game, error) {
 	p := NewPlayer(160,200,10,10,true,10,10, g, NewInput())
 	pImg := ebiten.NewImage(p.height, p.width)
 	g.objects[p] = pImg
-	e := NewCharacter(100,100,10,10,true,10,10, g)
+	o := &Object{game:g, x:100, y:100, height:10, width:10, phase: true, image_l: ebiten.NewImage(10,10), image_d: ebiten.NewImage(10,10)}
+	e := NewCharacter(o, 100, 100)
 	eImg := ebiten.NewImage(e.height, e.width)
 	g.objects[e] = eImg
 	return g, nil
@@ -36,7 +38,11 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	screen.Fill(color.RGBA{0x00, 0x00, 0x00, 0xff})
+	if g.phase {
+		screen.Fill(color.RGBA{0x00, 0x00, 0x00, 0xff})
+	} else {
+		screen.Fill(color.RGBA{0xff, 0xff, 0xff, 0xff})
+	}
 
 	for o, i := range g.objects {
 		c := o.(common)
@@ -75,4 +81,8 @@ func (g *Game) getEnemy() *Character {
 		}
 	}
 	return nil
+}
+
+func (g *Game) phaseShift() {
+	g.phase = !g.phase
 }

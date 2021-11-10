@@ -8,6 +8,7 @@ import (
 type Player struct {
 	common
 	Object
+	Characteristic
 	Character
 	input *Input
 }
@@ -44,6 +45,8 @@ func (p *Player) command(cmd Command) error {
 			shot.addEnemy(e)
 		}
 		p.game.setObject(shot, shot.getImage())
+	case KeyCtrl:
+		p.game.phaseShift()
 	}
 	return nil
 }

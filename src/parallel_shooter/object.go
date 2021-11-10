@@ -5,11 +5,14 @@ import (
 )
 
 type Object struct {
+	game *Game
 	x int
 	y int
 	height int
 	width int
 	phase bool
+	image_l *ebiten.Image
+	image_d *ebiten.Image
 }
 
 type common interface {

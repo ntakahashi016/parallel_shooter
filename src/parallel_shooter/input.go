@@ -13,6 +13,7 @@ const (
 	DirDown
 	DirLeft
 	KeySpace
+	KeyCtrl
 )
 
 type mouseState int
@@ -44,6 +45,8 @@ func (c Command) String() string {
 		return "Left"
 	case KeySpace:
 		return "Shot"
+	case KeyCtrl:
+		return "Phase shift"
 	}
 	panic("not reach")
 }
@@ -213,6 +216,9 @@ func (i *Input) getCommand() (Command, bool) {
 	}
 	if repeatingKeyPressed(ebiten.KeySpace) {
 		return KeySpace, true
+	}
+	if repeatingKeyPressed(ebiten.KeyControl) {
+		return KeyCtrl, true
 	}
 	return 0, false
 }

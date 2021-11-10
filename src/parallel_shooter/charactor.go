@@ -16,20 +16,15 @@ type Character struct {
 	hp int
 	score int
 	value int
-	game *Game
 }
 
-func NewCharacter(x,y,h,w int, p bool, hp, v int, g *Game) *Character {
-	c := &Character{}
-	c.x = x
-	c.y = y
-	c.height = h
-	c.width = w
-	c.phase = p
+func NewCharacter(object *Object, hp,v int) *Character {
+	c := &Character{
+		Object: *object,
+	}
 	c.hp = hp
 	c.value = v
 	c.score = 0
-	c.game = g
 	return c
 }
 
