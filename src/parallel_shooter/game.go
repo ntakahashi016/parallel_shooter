@@ -5,8 +5,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-const width = 320
-const height = 240
+const width = 640
+const height = 480
 
 type Game struct{
 	objects map[interface{}]*ebiten.Image
@@ -26,7 +26,7 @@ func NewGame() (*Game, error) {
 	return g, nil
 }
 
-func (g *Game) Update() error {
+func (g *Game) Update() Mode {
 	for o, _ := range g.objects {
 		c := o.(common)
 		c.Update()
@@ -34,7 +34,7 @@ func (g *Game) Update() error {
 			g.deleteObject(c)
 		}
 	}
-	return nil
+	return GAME
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
