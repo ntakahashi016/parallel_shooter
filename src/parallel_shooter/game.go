@@ -11,15 +11,18 @@ const height = 480
 type Game struct{
 	objects map[interface{}]*ebiten.Image
 	phase bool
+	clear bool
 }
 
 func NewGame() (*Game, error) {
 	g := &Game{}
+	g.phase = true
+	g.clear = false
 	g.objects = map[interface{}]*ebiten.Image{}
 	p := NewPlayer(160,200,10,10,true,10,10, g, NewInput())
 	pImg := ebiten.NewImage(p.height, p.width)
 	g.objects[p] = pImg
-	o := &Object{game:g, x:100, y:100, height:10, width:10, phase: true, image_l: ebiten.NewImage(10,10), image_d: ebiten.NewImage(10,10)}
+	o := &Object{game:g, x:100, y:100, height:10, width:10, phase: g.phase, image_l: ebiten.NewImage(10,10), image_d: ebiten.NewImage(10,10)}
 	e := NewCharacter(o, 100, 100)
 	eImg := ebiten.NewImage(e.height, e.width)
 	g.objects[e] = eImg
@@ -34,6 +37,7 @@ func (g *Game) Update() Mode {
 			g.deleteObject(c)
 		}
 	}
+	if g.clear { return RESULT }
 	return GAME
 }
 
@@ -85,4 +89,14 @@ func (g *Game) getEnemy() *Character {
 
 func (g *Game) phaseShift() {
 	g.phase = !g.phase
+}
+
+func (g *Game) checkGameClear() {
+	for k,_ := range g.objects {
+		switch k.(type) {
+		case *Character:
+			g.clear = false
+		}
+	}
+	g.clear = true
 }
