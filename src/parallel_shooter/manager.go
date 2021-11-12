@@ -17,6 +17,7 @@ type Mode int
 const (
 	TITLE Mode = iota
 	GAME
+	RESULT
 )
 
 type Manager struct {
@@ -45,6 +46,12 @@ func (m *Manager) Update() error {
 		if m.pre_mode != m.mode {
 			m.pre_mode = m.mode
 			m.current,_ = NewGame()
+		}
+		m.mode = m.current.(updatable).Update()
+	case RESULT:
+		if m.pre_mode != m.mode {
+			m.pre_mode = m.mode
+			m.current,_ = NewResult()
 		}
 		m.mode = m.current.(updatable).Update()
 	}
