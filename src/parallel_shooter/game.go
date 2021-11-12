@@ -87,8 +87,20 @@ func (g *Game) getEnemy() *Character {
 	return nil
 }
 
+func (g *Game) getPlayer() *Player {
+	for k,_ := range g.objects {
+		switch k.(type) {
+		case *Player:
+			return k.(*Player)
+		}
+	}
+	return nil
+}
+
 func (g *Game) phaseShift() {
 	g.phase = !g.phase
+	p := g.getPlayer()
+	p.setPhase(g.phase)
 }
 
 func (g *Game) checkGameClear() {
