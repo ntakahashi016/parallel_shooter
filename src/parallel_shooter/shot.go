@@ -38,7 +38,7 @@ func (s *Shot)Update() error {
 	hitArea := NewArea(NewPoint(s.x,prev_y),NewPoint(s.x+s.width,s.y))
 	for _,o := range s.enemies {
 		e,_ := o.(common)
-		if hitArea.isHit(e.getArea()) {
+		if e.getPhase() == s.phase && hitArea.isHit(e.getArea()) {
 			e.(Characteristic).hit(s.attack)
 			s.destroy()
 		}

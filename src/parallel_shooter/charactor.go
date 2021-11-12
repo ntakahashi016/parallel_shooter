@@ -40,6 +40,7 @@ func (c *Character) Draw(img *ebiten.Image) error {
 func (c *Character) getx() int { return c.x }
 func (c *Character) gety() int { return c.y }
 func (c *Character) getArea() *Area { return NewArea(NewPoint(c.x, c.y), NewPoint(c.x+c.width, c.y+c.height)) }
+func (c *Character) getPhase() bool { return c.phase }
 
 func (c *Character) hit(damage int) {
 	c.hp -= damage

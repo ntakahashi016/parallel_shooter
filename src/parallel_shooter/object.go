@@ -21,5 +21,6 @@ type common interface {
 	getx() int
 	gety() int
 	getArea() *Area
+	getPhase() bool
 }
 

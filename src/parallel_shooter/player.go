@@ -66,6 +66,8 @@ func (p *Player) Draw(img *ebiten.Image) error {
 func (p *Player) getx() int { return p.x }
 func (p *Player) gety() int { return p.y }
 func (p *Player) getArea() *Area { return NewArea(NewPoint(p.x, p.y), NewPoint(p.x+p.width, p.y+p.height)) }
+func (p *Player) getPhase() bool { return p.phase }
+func (p *Player) setPhase(phase bool) { p.phase = phase }
 func (p *Player) hit(damage int) {
 	p.hp -= damage
 	if p.hp <= 0 {
