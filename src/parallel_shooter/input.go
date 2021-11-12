@@ -217,7 +217,7 @@ func (i *Input) getCommand() (Command, bool) {
 	if repeatingKeyPressed(ebiten.KeySpace) {
 		return KeySpace, true
 	}
-	if repeatingKeyPressed(ebiten.KeyControl) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyControl) {
 		return KeyCtrl, true
 	}
 	return 0, false
