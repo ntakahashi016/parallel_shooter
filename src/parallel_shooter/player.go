@@ -40,8 +40,8 @@ func (p *Player) command(cmd Command) error {
 		p.y = p.y + 1
 	case KeySpace:
 		shot := newShot(p.x,p.y,5,5,p.phase,0,5,1, ebiten.NewImage(5,5), p.game)
-		e := p.game.getEnemy()
-		if e!=nil {
+		enemies := p.game.getEnemies()
+		for _,e := range enemies {
 			shot.addEnemy(e)
 		}
 		p.game.setObject(shot, shot.getImage())

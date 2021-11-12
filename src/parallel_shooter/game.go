@@ -22,10 +22,14 @@ func NewGame() (*Game, error) {
 	p := NewPlayer(160,200,10,10,true,10,10, g, NewInput())
 	pImg := ebiten.NewImage(p.height, p.width)
 	g.objects[p] = pImg
-	o := &Object{game:g, x:100, y:100, height:10, width:10, phase: g.phase, image_l: ebiten.NewImage(10,10), image_d: ebiten.NewImage(10,10)}
-	e := NewCharacter(o, 100, 100)
-	eImg := ebiten.NewImage(e.height, e.width)
-	g.objects[e] = eImg
+	o1 := &Object{game:g, x:100, y:100, height:10, width:10, phase: g.phase, image_l: ebiten.NewImage(10,10), image_d: ebiten.NewImage(10,10)}
+	e1 := NewCharacter(o1, 100, 100)
+	eImg1 := ebiten.NewImage(e1.height, e1.width)
+	g.objects[e1] = eImg1
+	o2 := &Object{game:g, x:200, y:100, height:10, width:10, phase: !g.phase, image_l: ebiten.NewImage(10,10), image_d: ebiten.NewImage(10,10)}
+	e2 := NewCharacter(o2, 100, 100)
+	eImg2 := ebiten.NewImage(e2.height, e2.width)
+	g.objects[e2] = eImg2
 	return g, nil
 }
 
@@ -77,14 +81,15 @@ func (g *Game) outOfScreen(x,y int) bool {
 	return false
 }
 
-func (g *Game) getEnemy() *Character {
+func (g *Game) getEnemies() []*Character {
+	var enemies []*Character
 	for k,_ := range g.objects {
 		switch k.(type) {
 		case *Character:
-			return k.(*Character)
+			enemies = append(enemies, k.(*Character))
 		}
 	}
-	return nil
+	return enemies
 }
 
 func (g *Game) getPlayer() *Player {
@@ -104,11 +109,13 @@ func (g *Game) phaseShift() {
 }
 
 func (g *Game) checkGameClear() {
+	var flag bool
+	flag = true
 	for k,_ := range g.objects {
 		switch k.(type) {
 		case *Character:
-			g.clear = false
+			flag = false
 		}
 	}
-	g.clear = true
+	g.clear = flag
 }
