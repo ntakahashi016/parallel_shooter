@@ -59,19 +59,13 @@ func NewGame() (*Game, error) {
 }
 
 func (g *Game) Update() Mode {
-	channel := make(chan bool)
-	go g.player.run(channel)
-	for _,v := range g.getEnemies() {
-		go v.run()
-	}
 	for _,v := range g.objects {
 		c := v.(common)
-		c.Update()
+		go c.run()
 		if g.outOfScreen(c.getx(), c.gety()) {
 			g.deleteObject(c)
 		}
 	}
-	_ :<- channel
 	if g.clear { return RESULT }
 	return GAME
 }

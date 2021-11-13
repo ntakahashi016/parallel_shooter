@@ -55,11 +55,10 @@ func (p *Player) Update() error {
 	return nil
 }
 
-func (p *Player) run(ch chan bool) {
+func (p *Player) run() {
 	if cmd, ok := p.input.getCommand(); ok {
 		p.command(cmd)
 	}
-	ch <- true
 }
 
 func (p *Player) Draw(img *ebiten.Image) error {
