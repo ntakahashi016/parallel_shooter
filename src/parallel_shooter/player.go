@@ -52,10 +52,14 @@ func (p *Player) command(cmd Command) error {
 }
 
 func (p *Player) Update() error {
+	return nil
+}
+
+func (p *Player) run(ch chan bool) {
 	if cmd, ok := p.input.getCommand(); ok {
 		p.command(cmd)
 	}
-	return nil
+	ch <- true
 }
 
 func (p *Player) Draw(img *ebiten.Image) error {
