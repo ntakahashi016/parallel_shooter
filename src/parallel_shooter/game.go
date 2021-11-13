@@ -3,6 +3,7 @@ package parallel_shooter
 import (
 	"image/color"
 	"github.com/hajimehoshi/ebiten/v2"
+	"sync"
 )
 
 const width = 640
@@ -22,6 +23,7 @@ type ImageSet struct {
 
 type Game struct{
 	objects []interface{}
+	mu sync.Mutex
 	phase Phase
 	clear bool
 	player *Player
@@ -62,9 +64,6 @@ func (g *Game) Update() Mode {
 	for _,v := range g.objects {
 		c := v.(common)
 		go c.run()
-		if g.outOfScreen(c.getx(), c.gety()) {
-			g.deleteObject(c)
-		}
 	}
 	if g.clear { return RESULT }
 	return GAME
@@ -77,6 +76,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		screen.Fill(color.RGBA{0xff, 0xff, 0xff, 0xff})
 	}
 
+	g.mu.Lock()
+	defer g.mu.Unlock()
 	for _, v := range g.objects {
 		c := v.(common)
 		c.Draw(c.getImage())
@@ -97,6 +98,8 @@ func (g *Game) setObject(o interface{}) {
 }
 
 func (g *Game) deleteObject(o interface{}) {
+	g.mu.Lock()
+	defer g.mu.Unlock()
 	newObjects := []interface{}{}
 	for _,v := range g.objects {
 		if v == o {
