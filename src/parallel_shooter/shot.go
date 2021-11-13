@@ -1,7 +1,6 @@
 package parallel_shooter
 
 import (
-	"image/color"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -12,11 +11,10 @@ type Shot struct {
 	speed int
 	attack int
 	enemies []interface{}
-	image *ebiten.Image
 	game *Game
 }
 
-func newShot(x,y,h,w int, p Phase, d,spd,a int, i *ebiten.Image, g *Game) *Shot{
+func newShot(x,y,h,w int, p Phase, d,spd,a int, i *ImageSet, g *Game) *Shot{
 	s := &Shot{}
 	s.x = x
 	s.y = y
@@ -27,9 +25,8 @@ func newShot(x,y,h,w int, p Phase, d,spd,a int, i *ebiten.Image, g *Game) *Shot{
 	s.speed = spd
 	s.attack = a
 	s.enemies = []interface{}{}
-	s.image = i
+	s.images = i
 	s.game = g
-	s.image.Fill(color.RGBA{0x00, 0xff, 0x00, 0xff})
 	return s
 }
 
@@ -70,7 +67,21 @@ func (s *Shot) deletEnemy(e interface{}) {
 	}
 }
 
-func (s *Shot) getImage() *ebiten.Image { return s.image }
+func (s *Shot) getImage() *ebiten.Image {
+	var i *ebiten.Image
+	gPhase := s.game.getPhase()
+	if s.phase == gPhase {
+		switch gPhase {
+		case Light:
+			i = s.images.light
+		case Dark:
+			i = s.images.dark
+		}
+	} else {
+		i = s.images.gray
+	}
+	return i
+}
 
 func (s *Shot) destroy() {
 	s.game.deleteObject(s)

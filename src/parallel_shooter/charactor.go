@@ -18,9 +18,10 @@ type Character struct {
 	score int
 	value int
 	rand *rand.Rand
+	shotImages *ImageSet
 }
 
-func NewCharacter(object *Object, hp,v int) *Character {
+func NewCharacter(object *Object, hp,v int, shotImages *ImageSet) *Character {
 	c := &Character{
 		Object: *object,
 	}
@@ -29,6 +30,7 @@ func NewCharacter(object *Object, hp,v int) *Character {
 	c.score = 0
 	source := rand.NewSource(time.Now().UnixNano())
 	c.rand = rand.New(source)
+	c.shotImages = shotImages
 	return c
 }
 
@@ -43,7 +45,7 @@ func (c *Character) command(cmd Command) error {
 	case DirDown:
 		c.y = c.y + 1
 	case KeySpace:
-		shot := newShot(c.x,c.y,5,5,c.phase,0,-5,1, ebiten.NewImage(5,5), c.game)
+		shot := newShot(c.x,c.y,5,5,c.phase,0,-5,1, c.shotImages, c.game)
 		enemies := c.game.getPlayers()
 		for _,e := range enemies {
 			shot.addEnemy(e)

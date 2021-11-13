@@ -10,9 +10,10 @@ type Player struct {
 	Characteristic
 	Character
 	input *Input
+	shotImages *ImageSet
 }
 
-func NewPlayer(x,y,h,w int, p Phase, hp, v int, g *Game, i *Input, images *ImageSet) *Player {
+func NewPlayer(x,y,h,w int, p Phase, hp, v int, g *Game, i *Input, images *ImageSet, shotImages *ImageSet) *Player {
 	pl := &Player{}
 	pl.x = x
 	pl.y = y
@@ -25,6 +26,7 @@ func NewPlayer(x,y,h,w int, p Phase, hp, v int, g *Game, i *Input, images *Image
 	pl.game = g
 	pl.input = i
 	pl.images = images
+	pl.shotImages = shotImages
 	return pl
 }
 
@@ -39,7 +41,7 @@ func (p *Player) command(cmd Command) error {
 	case DirDown:
 		p.y = p.y + 1
 	case KeySpace:
-		shot := newShot(p.x,p.y,5,5,p.phase,0,5,1, ebiten.NewImage(5,5), p.game)
+		shot := newShot(p.x,p.y,5,5,p.phase,0,5,1, p.shotImages, p.game)
 		enemies := p.game.getEnemies()
 		for _,e := range enemies {
 			shot.addEnemy(e)
