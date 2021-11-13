@@ -29,6 +29,7 @@ func newShot(x,y,h,w int, p Phase, d,spd,a int, i *ebiten.Image, g *Game) *Shot{
 	s.enemies = []interface{}{}
 	s.image = i
 	s.game = g
+	s.image.Fill(color.RGBA{0x00, 0xff, 0x00, 0xff})
 	return s
 }
 
@@ -50,7 +51,6 @@ func (s *Shot)Update() error {
 }
 
 func (s *Shot)Draw(img *ebiten.Image) error {
-	img.Fill(color.RGBA{0x00, 0xff, 0x00, 0xff})
 	return nil
 }
 

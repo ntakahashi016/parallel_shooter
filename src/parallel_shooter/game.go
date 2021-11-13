@@ -79,7 +79,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	for _, v := range g.objects {
 		g.mu.Lock()
 		c := v.(common)
-		c.Draw(c.getImage())
+		// c.Draw(c.getImage())
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(float64(c.getx()), float64(c.gety()))
 		screen.DrawImage(c.getImage(),op)
