@@ -41,7 +41,14 @@ func NewGame() (*Game, error) {
 	playerImageSet.light.Fill(color.RGBA{0x00, 0x00, 0xff, 0xff})
 	playerImageSet.dark.Fill(color.RGBA{0x00, 0xff, 0xff, 0xff})
 	playerImageSet.gray.Fill(color.RGBA{0x88, 0x88, 0x88, 0xff})
-	p := NewPlayer(160,200,10,10,g.phase,10,10, g, NewInput(), playerImageSet)
+	playerShotImageSet := &ImageSet{}
+	playerShotImageSet.light = ebiten.NewImage(5,5)
+	playerShotImageSet.dark = ebiten.NewImage(5,5)
+	playerShotImageSet.gray = ebiten.NewImage(5,5)
+	playerShotImageSet.light.Fill(color.RGBA{0x00, 0x00, 0xff, 0xff})
+	playerShotImageSet.dark.Fill(color.RGBA{0x00, 0xff, 0xff, 0xff})
+	playerShotImageSet.gray.Fill(color.RGBA{0x88, 0x88, 0x88, 0xff})
+	p := NewPlayer(160,200,10,10,g.phase,10,10, g, NewInput(), playerImageSet, playerShotImageSet)
 	g.objects = append(g.objects, p)
 	enemyImageSet := &ImageSet{}
 	enemyImageSet.light = ebiten.NewImage(10,10)
@@ -50,11 +57,18 @@ func NewGame() (*Game, error) {
 	enemyImageSet.light.Fill(color.RGBA{0xff, 0x00, 0x00, 0xff})
 	enemyImageSet.dark.Fill(color.RGBA{0xff, 0xff, 0x00, 0xff})
 	enemyImageSet.gray.Fill(color.RGBA{0x88, 0x88, 0x88, 0xff})
+	enemyShotImageSet := &ImageSet{}
+	enemyShotImageSet.light = ebiten.NewImage(5,5)
+	enemyShotImageSet.dark = ebiten.NewImage(5,5)
+	enemyShotImageSet.gray = ebiten.NewImage(5,5)
+	enemyShotImageSet.light.Fill(color.RGBA{0xff, 0x00, 0x00, 0xff})
+	enemyShotImageSet.dark.Fill(color.RGBA{0xff, 0xff, 0x00, 0xff})
+	enemyShotImageSet.gray.Fill(color.RGBA{0x88, 0x88, 0x88, 0xff})
 	o1 := &Object{game:g, x:100, y:100, height:10, width:10, phase: Dark, images: enemyImageSet}
-	e1 := NewCharacter(o1, 100, 100)
+	e1 := NewCharacter(o1, 100, 100, enemyShotImageSet)
 	g.objects = append(g.objects, e1)
 	o2 := &Object{game:g, x:200, y:100, height:10, width:10, phase: Light, images: enemyImageSet}
-	e2 := NewCharacter(o2, 100, 100)
+	e2 := NewCharacter(o2, 100, 100, enemyShotImageSet)
 	g.objects = append(g.objects, e2)
 	g.player = p
 	return g, nil
