@@ -10,27 +10,28 @@ type Characteristic interface {
 	hit(int)
 }
 
+type CharacterAttr struct {
+	hp int
+	score int
+	value int
+	shotImages *ImageSet
+}
+
 type Character struct {
 	common
 	Object
 	Characteristic
-	hp int
-	score int
-	value int
+	CharacterAttr
 	rand *rand.Rand
-	shotImages *ImageSet
 }
 
-func NewCharacter(object *Object, hp,v int, shotImages *ImageSet) *Character {
+func NewCharacter(o Object, ca CharacterAttr) *Character {
 	c := &Character{
-		Object: *object,
+		Object: o,
+		CharacterAttr: ca,
 	}
-	c.hp = hp
-	c.value = v
-	c.score = 0
 	source := rand.NewSource(time.Now().UnixNano())
 	c.rand = rand.New(source)
-	c.shotImages = shotImages
 	return c
 }
 
@@ -45,7 +46,8 @@ func (c *Character) command(cmd Command) error {
 	case DirDown:
 		c.y = c.y + 1
 	case KeySpace:
-		shot := newShot(c.x,c.y,5,5,c.phase,0,-5,1, c.shotImages, c.game)
+		o := Object{game: c.game, x: c.x, y: c.y, height: 5, width:5, phase: c.phase, images: c.shotImages}
+		shot := newShot(o,0,-5,1)
 		enemies := c.game.getPlayers()
 		for _,e := range enemies {
 			shot.addEnemy(e)

@@ -8,25 +8,16 @@ type Player struct {
 	common
 	Object
 	Characteristic
-	Character
+	CharacterAttr
 	input *Input
-	shotImages *ImageSet
 }
 
-func NewPlayer(x,y,h,w int, p Phase, hp, v int, g *Game, i *Input, images *ImageSet, shotImages *ImageSet) *Player {
-	pl := &Player{}
-	pl.x = x
-	pl.y = y
-	pl.height = h
-	pl.width = w
-	pl.phase = p
-	pl.hp = hp
-	pl.value = v
-	pl.score = 0
-	pl.game = g
+func NewPlayer(o Object, ca CharacterAttr, i *Input) *Player {
+	pl := &Player{
+		Object: o,
+		CharacterAttr: ca,
+	}
 	pl.input = i
-	pl.images = images
-	pl.shotImages = shotImages
 	return pl
 }
 
@@ -41,7 +32,8 @@ func (p *Player) command(cmd Command) error {
 	case DirDown:
 		p.y = p.y + 1
 	case KeySpace:
-		shot := newShot(p.x,p.y,5,5,p.phase,0,5,1, p.shotImages, p.game)
+		o := Object{game: p.game, x: p.x, y: p.y, height: 5, width:5, phase: p.phase, images: p.shotImages}
+		shot := newShot(o,0,5,1)
 		enemies := p.game.getEnemies()
 		for _,e := range enemies {
 			shot.addEnemy(e)
