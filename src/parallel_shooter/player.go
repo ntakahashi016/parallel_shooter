@@ -1,7 +1,6 @@
 package parallel_shooter
 
 import (
-	"image/color"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -13,7 +12,7 @@ type Player struct {
 	input *Input
 }
 
-func NewPlayer(x,y,h,w int, p bool, hp, v int, g *Game, i *Input) *Player {
+func NewPlayer(x,y,h,w int, p Phase, hp, v int, g *Game, i *Input, images *ImageSet) *Player {
 	pl := &Player{}
 	pl.x = x
 	pl.y = y
@@ -25,6 +24,7 @@ func NewPlayer(x,y,h,w int, p bool, hp, v int, g *Game, i *Input) *Player {
 	pl.score = 0
 	pl.game = g
 	pl.input = i
+	pl.images = images
 	return pl
 }
 
@@ -44,7 +44,7 @@ func (p *Player) command(cmd Command) error {
 		for _,e := range enemies {
 			shot.addEnemy(e)
 		}
-		p.game.setObject(shot, shot.getImage())
+		p.game.setObject(shot)
 	case KeyCtrl:
 		p.game.phaseShift()
 	}
@@ -59,21 +59,37 @@ func (p *Player) Update() error {
 }
 
 func (p *Player) Draw(img *ebiten.Image) error {
-	img.Fill(color.RGBA{0x00, 0x00, 0xff, 0xff})
 	return nil
 }
 
 func (p *Player) getx() int { return p.x }
 func (p *Player) gety() int { return p.y }
 func (p *Player) getArea() *Area { return NewArea(NewPoint(p.x, p.y), NewPoint(p.x+p.width, p.y+p.height)) }
-func (p *Player) getPhase() bool { return p.phase }
-func (p *Player) setPhase(phase bool) { p.phase = phase }
+func (p *Player) getPhase() Phase { return p.phase }
+func (p *Player) setPhase(phase Phase) { p.phase = phase }
 func (p *Player) hit(damage int) {
 	p.hp -= damage
 	if p.hp <= 0 {
 		p.destroy()
 	}
 }
+
 func (p *Player) destroy() {
 	p.game.deleteObject(p)
+}
+
+func (p *Player) getImage() *ebiten.Image{
+	var i *ebiten.Image
+	gPhase := p.game.getPhase()
+	if p.phase == gPhase {
+		switch gPhase {
+		case Light:
+			i = p.images.light
+		case Dark:
+			i = p.images.dark
+		}
+	} else {
+		i = p.images.gray
+	}
+	return i
 }

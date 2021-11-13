@@ -16,7 +16,7 @@ type Shot struct {
 	game *Game
 }
 
-func newShot(x,y,h,w int, p bool, d,spd,a int, i *ebiten.Image, g *Game) *Shot{
+func newShot(x,y,h,w int, p Phase, d,spd,a int, i *ebiten.Image, g *Game) *Shot{
 	s := &Shot{}
 	s.x = x
 	s.y = y
@@ -26,7 +26,7 @@ func newShot(x,y,h,w int, p bool, d,spd,a int, i *ebiten.Image, g *Game) *Shot{
 	s.dir = d
 	s.speed = spd
 	s.attack = a
-	s.enemies = nil
+	s.enemies = []interface{}{}
 	s.image = i
 	s.game = g
 	return s

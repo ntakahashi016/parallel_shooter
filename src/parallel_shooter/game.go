@@ -8,34 +8,57 @@ import (
 const width = 640
 const height = 480
 
+type Phase int
+const (
+	Light Phase = iota
+	Dark
+)
+
+type ImageSet struct {
+	light *ebiten.Image
+	dark *ebiten.Image
+	gray *ebiten.Image
+}
+
 type Game struct{
-	objects map[interface{}]*ebiten.Image
-	phase bool
+	objects []interface{}
+	phase Phase
 	clear bool
 }
 
 func NewGame() (*Game, error) {
 	g := &Game{}
-	g.phase = true
+	g.phase = Light
 	g.clear = false
-	g.objects = map[interface{}]*ebiten.Image{}
-	p := NewPlayer(160,200,10,10,true,10,10, g, NewInput())
-	pImg := ebiten.NewImage(p.height, p.width)
-	g.objects[p] = pImg
-	o1 := &Object{game:g, x:100, y:100, height:10, width:10, phase: g.phase, image_l: ebiten.NewImage(10,10), image_d: ebiten.NewImage(10,10)}
+	g.objects = []interface{}{}
+	playerImageSet := &ImageSet{}
+	playerImageSet.light = ebiten.NewImage(10,10)
+	playerImageSet.dark = ebiten.NewImage(10,10)
+	playerImageSet.gray = ebiten.NewImage(10,10)
+	playerImageSet.light.Fill(color.RGBA{0x00, 0x00, 0xff, 0xff})
+	playerImageSet.dark.Fill(color.RGBA{0x00, 0xff, 0xff, 0xff})
+	playerImageSet.gray.Fill(color.RGBA{0x88, 0x88, 0x88, 0xff})
+	p := NewPlayer(160,200,10,10,g.phase,10,10, g, NewInput(), playerImageSet)
+	g.objects = append(g.objects, p)
+	enemyImageSet := &ImageSet{}
+	enemyImageSet.light = ebiten.NewImage(10,10)
+	enemyImageSet.dark = ebiten.NewImage(10,10)
+	enemyImageSet.gray = ebiten.NewImage(10,10)
+	enemyImageSet.light.Fill(color.RGBA{0xff, 0x00, 0x00, 0xff})
+	enemyImageSet.dark.Fill(color.RGBA{0xff, 0xff, 0x00, 0xff})
+	enemyImageSet.gray.Fill(color.RGBA{0x88, 0x88, 0x88, 0xff})
+	o1 := &Object{game:g, x:100, y:100, height:10, width:10, phase: Dark, images: enemyImageSet}
 	e1 := NewCharacter(o1, 100, 100)
-	eImg1 := ebiten.NewImage(e1.height, e1.width)
-	g.objects[e1] = eImg1
-	o2 := &Object{game:g, x:200, y:100, height:10, width:10, phase: !g.phase, image_l: ebiten.NewImage(10,10), image_d: ebiten.NewImage(10,10)}
+	g.objects = append(g.objects, e1)
+	o2 := &Object{game:g, x:200, y:100, height:10, width:10, phase: Light, images: enemyImageSet}
 	e2 := NewCharacter(o2, 100, 100)
-	eImg2 := ebiten.NewImage(e2.height, e2.width)
-	g.objects[e2] = eImg2
+	g.objects = append(g.objects, e2)
 	return g, nil
 }
 
 func (g *Game) Update() Mode {
-	for o, _ := range g.objects {
-		c := o.(common)
+	for _,v := range g.objects {
+		c := v.(common)
 		c.Update()
 		if g.outOfScreen(c.getx(), c.gety()) {
 			g.deleteObject(c)
@@ -46,18 +69,18 @@ func (g *Game) Update() Mode {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	if g.phase {
+	if g.phase == Light {
 		screen.Fill(color.RGBA{0x00, 0x00, 0x00, 0xff})
 	} else {
 		screen.Fill(color.RGBA{0xff, 0xff, 0xff, 0xff})
 	}
 
-	for o, i := range g.objects {
-		c := o.(common)
-		c.Draw(i)
+	for _, v := range g.objects {
+		c := v.(common)
+		c.Draw(c.getImage())
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(float64(c.getx()), float64(c.gety()))
-		screen.DrawImage(i,op)
+		screen.DrawImage(c.getImage(),op)
 	}
 }
 
@@ -67,12 +90,19 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 	return w, h
 }
 
-func (g *Game) setObject(o interface{}, i *ebiten.Image) {
-	g.objects[o] = i
+func (g *Game) setObject(o interface{}) {
+	g.objects = append(g.objects, o)
 }
 
 func (g *Game) deleteObject(o interface{}) {
-	delete(g.objects, o)
+	newObjects := []interface{}{}
+	for _,v := range g.objects {
+		if v == o {
+			continue
+		}
+		newObjects = append(newObjects, v)
+	}
+	g.objects = newObjects
 }
 
 func (g *Game) outOfScreen(x,y int) bool {
@@ -83,27 +113,33 @@ func (g *Game) outOfScreen(x,y int) bool {
 
 func (g *Game) getEnemies() []*Character {
 	var enemies []*Character
-	for k,_ := range g.objects {
-		switch k.(type) {
+	for _,v := range g.objects {
+		switch v.(type) {
 		case *Character:
-			enemies = append(enemies, k.(*Character))
+			enemies = append(enemies, v.(*Character))
 		}
 	}
 	return enemies
 }
 
 func (g *Game) getPlayer() *Player {
-	for k,_ := range g.objects {
-		switch k.(type) {
+	for _,v := range g.objects {
+		switch v.(type) {
 		case *Player:
-			return k.(*Player)
+			return v.(*Player)
 		}
 	}
 	return nil
 }
 
+func (g *Game) getPhase() Phase { return g.phase }
+
 func (g *Game) phaseShift() {
-	g.phase = !g.phase
+	if g.phase == Light {
+		g.phase = Dark
+	} else {
+		g.phase = Light
+	}
 	p := g.getPlayer()
 	p.setPhase(g.phase)
 }
@@ -111,8 +147,8 @@ func (g *Game) phaseShift() {
 func (g *Game) checkGameClear() {
 	var flag bool
 	flag = true
-	for k,_ := range g.objects {
-		switch k.(type) {
+	for _,v := range g.objects {
+		switch v.(type) {
 		case *Character:
 			flag = false
 		}
