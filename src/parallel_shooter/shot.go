@@ -11,22 +11,16 @@ type Shot struct {
 	speed int
 	attack int
 	enemies []interface{}
-	game *Game
 }
 
-func newShot(x,y,h,w int, p Phase, d,spd,a int, i *ImageSet, g *Game) *Shot{
-	s := &Shot{}
-	s.x = x
-	s.y = y
-	s.height = h
-	s.width = w
-	s.phase = p
+func newShot(o Object, d,spd,a int) *Shot{
+	s := &Shot{
+		Object: o,
+	}
 	s.dir = d
 	s.speed = spd
 	s.attack = a
 	s.enemies = []interface{}{}
-	s.images = i
-	s.game = g
 	return s
 }
 

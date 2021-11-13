@@ -26,7 +26,6 @@ type Game struct{
 	mu sync.Mutex
 	phase Phase
 	clear bool
-	player *Player
 }
 
 func NewGame() (*Game, error) {
@@ -34,6 +33,8 @@ func NewGame() (*Game, error) {
 	g.phase = Light
 	g.clear = false
 	g.objects = []interface{}{}
+	var o Object
+	var ca CharacterAttr
 	playerImageSet := &ImageSet{}
 	playerImageSet.light = ebiten.NewImage(10,10)
 	playerImageSet.dark = ebiten.NewImage(10,10)
@@ -48,8 +49,9 @@ func NewGame() (*Game, error) {
 	playerShotImageSet.light.Fill(color.RGBA{0x00, 0x00, 0xff, 0xff})
 	playerShotImageSet.dark.Fill(color.RGBA{0x00, 0xff, 0xff, 0xff})
 	playerShotImageSet.gray.Fill(color.RGBA{0x88, 0x88, 0x88, 0xff})
-	p := NewPlayer(160,200,10,10,g.phase,10,10, g, NewInput(), playerImageSet, playerShotImageSet)
-	g.objects = append(g.objects, p)
+	o = Object{game:g, x: (int)(width/2), y: height-20, height: 10, width: 10, phase: g.phase,images: playerImageSet}
+	ca = CharacterAttr{hp: 10,score: 0, value: 0, shotImages: playerShotImageSet}
+	g.objects = append(g.objects, NewPlayer(o, ca, NewInput()))
 	enemyImageSet := &ImageSet{}
 	enemyImageSet.light = ebiten.NewImage(10,10)
 	enemyImageSet.dark = ebiten.NewImage(10,10)
@@ -64,13 +66,12 @@ func NewGame() (*Game, error) {
 	enemyShotImageSet.light.Fill(color.RGBA{0xff, 0x00, 0x00, 0xff})
 	enemyShotImageSet.dark.Fill(color.RGBA{0xff, 0xff, 0x00, 0xff})
 	enemyShotImageSet.gray.Fill(color.RGBA{0x88, 0x88, 0x88, 0xff})
-	o1 := &Object{game:g, x:100, y:100, height:10, width:10, phase: Dark, images: enemyImageSet}
-	e1 := NewCharacter(o1, 100, 100, enemyShotImageSet)
-	g.objects = append(g.objects, e1)
-	o2 := &Object{game:g, x:200, y:100, height:10, width:10, phase: Light, images: enemyImageSet}
-	e2 := NewCharacter(o2, 100, 100, enemyShotImageSet)
-	g.objects = append(g.objects, e2)
-	g.player = p
+	o = Object{game:g, x:100, y:100, height:10, width:10, phase: Dark, images: enemyImageSet}
+	ca = CharacterAttr{hp: 10, score: 0, value: 100, shotImages: enemyShotImageSet}
+	g.objects = append(g.objects, NewCharacter(o, ca))
+	o = Object{game:g, x:200, y:100, height:10, width:10, phase: Light, images: enemyImageSet}
+	ca = CharacterAttr{hp: 10, score: 0, value: 100, shotImages: enemyShotImageSet}
+	g.objects = append(g.objects, NewCharacter(o, ca))
 	return g, nil
 }
 
