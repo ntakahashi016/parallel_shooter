@@ -76,14 +76,14 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		screen.Fill(color.RGBA{0xff, 0xff, 0xff, 0xff})
 	}
 
-	g.mu.Lock()
-	defer g.mu.Unlock()
 	for _, v := range g.objects {
+		g.mu.Lock()
 		c := v.(common)
 		c.Draw(c.getImage())
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(float64(c.getx()), float64(c.gety()))
 		screen.DrawImage(c.getImage(),op)
+		g.mu.Unlock()
 	}
 }
 
