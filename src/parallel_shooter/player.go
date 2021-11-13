@@ -22,15 +22,17 @@ func NewPlayer(o Object, ca CharacterAttr, i *Input) *Player {
 }
 
 func (p *Player) command(cmd Command) error {
+	x := p.x
+	y := p.y
 	switch cmd {
 	case DirUp:
-		p.y = p.y - 1
+		y = p.y - 1
 	case DirLeft:
-		p.x = p.x - 1
+		x = p.x - 1
 	case DirRight:
-		p.x = p.x + 1
+		x = p.x + 1
 	case DirDown:
-		p.y = p.y + 1
+		y = p.y + 1
 	case KeySpace:
 		o := Object{game: p.game, x: p.x, y: p.y, height: 5, width:5, phase: p.phase, images: p.shotImages}
 		shot := newShot(o,0,5,1)
@@ -41,6 +43,10 @@ func (p *Player) command(cmd Command) error {
 		p.game.setObject(shot)
 	case KeyCtrl:
 		p.game.phaseShift()
+	}
+	if !p.game.outOfScreen(x, y) {
+		p.x = x
+		p.y = y
 	}
 	return nil
 }
