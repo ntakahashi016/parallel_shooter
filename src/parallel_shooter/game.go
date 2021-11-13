@@ -124,14 +124,15 @@ func (g *Game) getEnemies() []*Character {
 	return enemies
 }
 
-func (g *Game) getPlayer() *Player {
+func (g *Game) getPlayers() []*Player {
+	var players []*Player
 	for _,v := range g.objects {
 		switch v.(type) {
 		case *Player:
-			return v.(*Player)
+			players = append(players, v.(*Player))
 		}
 	}
-	return nil
+	return players
 }
 
 func (g *Game) getPhase() Phase { return g.phase }
@@ -142,8 +143,10 @@ func (g *Game) phaseShift() {
 	} else {
 		g.phase = Light
 	}
-	p := g.getPlayer()
-	p.setPhase(g.phase)
+	players := g.getPlayers()
+	for _,p := range players {
+		p.setPhase(g.phase)
+	}
 }
 
 func (g *Game) checkGameClear() {

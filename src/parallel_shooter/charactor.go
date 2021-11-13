@@ -42,13 +42,13 @@ func (c *Character) command(cmd Command) error {
 		c.x = c.x + 1
 	case DirDown:
 		c.y = c.y + 1
-	// case KeySpace:
-	// 	shot := newShot(c.x,c.y,5,5,c.phase,0,-5,1, ebiten.NewImage(5,5), c.game)
-	// 	enemies := p.game.getPlayer()
-	// 	for _,e := range enemies {
-	// 		shot.addEnemy(e)
-	// 	}
-	// 	c.game.setObject(shot)
+	case KeySpace:
+		shot := newShot(c.x,c.y,5,5,c.phase,0,-5,1, ebiten.NewImage(5,5), c.game)
+		enemies := c.game.getPlayers()
+		for _,e := range enemies {
+			shot.addEnemy(e)
+		}
+		c.game.setObject(shot)
 	// case KeyCtrl:
 	// 	c.game.phaseShift()
 	}
@@ -61,7 +61,7 @@ func (c *Character) Update() error {
 
 func (c *Character) run() {
 	var cmd Command
-	switch c.rand.Intn(3) {
+	switch c.rand.Intn(5) {
 	case 0:
 		cmd = DirUp
 	case 1:
@@ -70,6 +70,8 @@ func (c *Character) run() {
 		cmd = DirDown
 	case 3:
 		cmd = DirLeft
+	case 4:
+		cmd = KeySpace
 	}
 	c.command(cmd)
 }

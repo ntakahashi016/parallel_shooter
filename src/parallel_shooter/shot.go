@@ -58,11 +58,11 @@ func (s *Shot) getx() int { return s.x }
 func (s *Shot) gety() int { return s.y }
 func (s *Shot) getArea() *Area { return NewArea(NewPoint(s.x, s.y), NewPoint(s.x+s.width, s.y+s.height)) }
 
-func (s *Shot) addEnemy(e *Character) {
+func (s *Shot) addEnemy(e interface{}) {
 	s.enemies = append(s.enemies, e)
 }
 
-func (s *Shot) deletEnemy(e *Character) {
+func (s *Shot) deletEnemy(e interface{}) {
 	for _,v := range s.enemies {
 		if v == e {
 			v = nil
