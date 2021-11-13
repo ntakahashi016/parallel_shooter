@@ -32,7 +32,7 @@ func newShot(x,y,h,w int, p Phase, d,spd,a int, i *ebiten.Image, g *Game) *Shot{
 	return s
 }
 
-func (s *Shot)Update() error {
+func (s *Shot) run() {
 	prev_y := s.y
 	s.y -= s.speed
 	hitArea := NewArea(NewPoint(s.x,prev_y),NewPoint(s.x+s.width,s.y))
@@ -43,8 +43,12 @@ func (s *Shot)Update() error {
 			s.destroy()
 		}
 	}
+}
+
+func (s *Shot)Update() error {
 	return nil
 }
+
 func (s *Shot)Draw(img *ebiten.Image) error {
 	img.Fill(color.RGBA{0x00, 0xff, 0x00, 0xff})
 	return nil

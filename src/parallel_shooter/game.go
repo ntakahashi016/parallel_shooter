@@ -24,6 +24,7 @@ type Game struct{
 	objects []interface{}
 	phase Phase
 	clear bool
+	player *Player
 }
 
 func NewGame() (*Game, error) {
@@ -53,13 +54,14 @@ func NewGame() (*Game, error) {
 	o2 := &Object{game:g, x:200, y:100, height:10, width:10, phase: Light, images: enemyImageSet}
 	e2 := NewCharacter(o2, 100, 100)
 	g.objects = append(g.objects, e2)
+	g.player = p
 	return g, nil
 }
 
 func (g *Game) Update() Mode {
 	for _,v := range g.objects {
 		c := v.(common)
-		c.Update()
+		go c.run()
 		if g.outOfScreen(c.getx(), c.gety()) {
 			g.deleteObject(c)
 		}
