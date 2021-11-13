@@ -60,6 +60,10 @@ func (c *Character) Update() error {
 }
 
 func (c *Character) run() {
+	if c.game.outOfScreen(c.getx(), c.gety()) {
+		c.game.deleteObject(c)
+		return
+	}
 	var cmd Command
 	switch c.rand.Intn(5) {
 	case 0:
