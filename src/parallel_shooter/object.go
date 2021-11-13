@@ -10,9 +10,8 @@ type Object struct {
 	y int
 	height int
 	width int
-	phase bool
-	image_l *ebiten.Image
-	image_d *ebiten.Image
+	phase Phase
+	images *ImageSet
 }
 
 type common interface {
@@ -21,6 +20,7 @@ type common interface {
 	getx() int
 	gety() int
 	getArea() *Area
-	getPhase() bool
+	getPhase() Phase
+	getImage() *ebiten.Image
 }
 

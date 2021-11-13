@@ -1,7 +1,7 @@
 package parallel_shooter
 
 import (
-	"image/color"
+	// "image/color"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -33,14 +33,13 @@ func (c *Character) Update() error {
 }
 
 func (c *Character) Draw(img *ebiten.Image) error {
-	img.Fill(color.RGBA{0xff, 0x00, 0x00, 0xff})
 	return nil
 }
 
 func (c *Character) getx() int { return c.x }
 func (c *Character) gety() int { return c.y }
 func (c *Character) getArea() *Area { return NewArea(NewPoint(c.x, c.y), NewPoint(c.x+c.width, c.y+c.height)) }
-func (c *Character) getPhase() bool { return c.phase }
+func (c *Character) getPhase() Phase { return c.phase }
 
 func (c *Character) hit(damage int) {
 	c.hp -= damage
@@ -52,4 +51,20 @@ func (c *Character) hit(damage int) {
 func (c *Character) destroy() {
 	c.game.deleteObject(c)
 	c.game.checkGameClear()
+}
+
+func (c *Character) getImage() *ebiten.Image {
+	var i *ebiten.Image
+	gPhase := c.game.getPhase()
+	if c.phase == gPhase {
+		switch gPhase {
+		case Light:
+			i = c.images.light
+		case Dark:
+			i = c.images.dark
+		}
+	} else {
+		i = c.images.gray
+	}
+	return i
 }
