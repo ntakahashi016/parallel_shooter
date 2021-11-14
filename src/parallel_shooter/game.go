@@ -125,10 +125,33 @@ func (g *Game) deleteObject(o interface{}) {
 	g.objects = newObjects
 }
 
-func (g *Game) outOfScreen(x,y int) bool {
-	if x < 0 || width <= x { return true }
-	if y < 0 || height <= y { return true }
+func (g *Game) outOfScreen(a *Area) bool {
+	if (a.p2.x < 0 || width <= a.p1.x) || (a.p2.y < 0 || height <= a.p1.y) {
+		return true
+	}
 	return false
+}
+
+func (g *Game) insideOfScreen(a *Area) bool {
+	if (a.p1.x >= 0 && width > a.p2.x) && (a.p1.y >= 0 && height > a.p2.y) {
+		return true
+	}
+	return false
+}
+
+func (g *Game) repointOnScreen(a *Area) Point {
+	p := Point{x: a.p1.x, y: a.p1.y}
+	if a.p1.x < 0 {
+		p.x = 0
+	} else if width <= a.p2.x {
+		p.x = width - (a.p2.x - a.p1.x)
+	}
+	if a.p1.y < 0 {
+		p.y = 0
+	} else if height <= a.p2.y {
+		p.y = height - (a.p2.y - a.p1.y)
+	}
+	return p
 }
 
 func (g *Game) getEnemies() []*Character {

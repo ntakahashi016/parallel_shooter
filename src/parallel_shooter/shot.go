@@ -25,6 +25,10 @@ func newShot(o Object, d,spd,a int) *Shot{
 }
 
 func (s *Shot) run() {
+	if s.game.outOfScreen(s.getArea()) {
+		s.game.deleteObject(s)
+		return
+	}
 	prev_y := s.y
 	s.y -= s.speed
 	hitArea := NewArea(NewPoint(s.x,prev_y),NewPoint(s.x+s.width,s.y))
