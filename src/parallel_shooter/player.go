@@ -44,9 +44,14 @@ func (p *Player) command(cmd Command) error {
 	case KeyCtrl:
 		p.game.phaseShift()
 	}
-	if !p.game.outOfScreen(x, y) {
+	a := NewArea(NewPoint(x,y), NewPoint(x+p.width-1, y+p.height-1))
+	if p.game.insideOfScreen(a) {
 		p.x = x
 		p.y = y
+	} else {
+		rp := p.game.repointOnScreen(a)
+		p.x = rp.x
+		p.y = rp.y
 	}
 	return nil
 }
@@ -67,7 +72,7 @@ func (p *Player) Draw(img *ebiten.Image) error {
 
 func (p *Player) getx() int { return p.x }
 func (p *Player) gety() int { return p.y }
-func (p *Player) getArea() *Area { return NewArea(NewPoint(p.x, p.y), NewPoint(p.x+p.width, p.y+p.height)) }
+func (p *Player) getArea() *Area { return NewArea(NewPoint(p.x, p.y), NewPoint(p.x+p.width-1, p.y+p.height-1)) }
 func (p *Player) getPhase() Phase { return p.phase }
 func (p *Player) setPhase(phase Phase) { p.phase = phase }
 func (p *Player) hit(damage int) {

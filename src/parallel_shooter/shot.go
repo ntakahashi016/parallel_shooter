@@ -25,7 +25,7 @@ func newShot(o Object, d,spd,a int) *Shot{
 }
 
 func (s *Shot) run() {
-	if s.game.outOfScreen(s.getx(), s.gety()) {
+	if s.game.outOfScreen(s.getArea()) {
 		s.game.deleteObject(s)
 		return
 	}

@@ -64,7 +64,7 @@ func (c *Character) Update() error {
 }
 
 func (c *Character) run() {
-	if c.game.outOfScreen(c.getx(), c.gety()) {
+	if c.game.outOfScreen(c.getArea()) {
 		c.game.deleteObject(c)
 		return
 	}
