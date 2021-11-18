@@ -26,6 +26,7 @@ type Game struct{
 	mu sync.Mutex
 	phase Phase
 	clear bool
+	ef *Enemy1Factory
 }
 
 func NewGame() (*Game, error) {
@@ -52,26 +53,9 @@ func NewGame() (*Game, error) {
 	o = Object{game:g, x: (int)(width/2), y: height-20, height: 10, width: 10, phase: g.phase,images: playerImageSet}
 	ca = CharacterAttr{hp: 10,score: 0, value: 0, shotImages: playerShotImageSet}
 	g.objects = append(g.objects, NewPlayer(o, ca, NewInput()))
-	enemyImageSet := &ImageSet{}
-	enemyImageSet.light = ebiten.NewImage(10,10)
-	enemyImageSet.dark = ebiten.NewImage(10,10)
-	enemyImageSet.gray = ebiten.NewImage(10,10)
-	enemyImageSet.light.Fill(color.RGBA{0xff, 0x00, 0x00, 0xff})
-	enemyImageSet.dark.Fill(color.RGBA{0xff, 0xff, 0x00, 0xff})
-	enemyImageSet.gray.Fill(color.RGBA{0x88, 0x88, 0x88, 0xff})
-	enemyShotImageSet := &ImageSet{}
-	enemyShotImageSet.light = ebiten.NewImage(5,5)
-	enemyShotImageSet.dark = ebiten.NewImage(5,5)
-	enemyShotImageSet.gray = ebiten.NewImage(5,5)
-	enemyShotImageSet.light.Fill(color.RGBA{0xff, 0x00, 0x00, 0xff})
-	enemyShotImageSet.dark.Fill(color.RGBA{0xff, 0xff, 0x00, 0xff})
-	enemyShotImageSet.gray.Fill(color.RGBA{0x88, 0x88, 0x88, 0xff})
-	o = Object{game:g, x:100, y:100, height:10, width:10, phase: Dark, images: enemyImageSet}
-	ca = CharacterAttr{hp: 10, score: 0, value: 100, shotImages: enemyShotImageSet}
-	g.objects = append(g.objects, NewCharacter(o, ca))
-	o = Object{game:g, x:200, y:100, height:10, width:10, phase: Light, images: enemyImageSet}
-	ca = CharacterAttr{hp: 10, score: 0, value: 100, shotImages: enemyShotImageSet}
-	g.objects = append(g.objects, NewCharacter(o, ca))
+	g.ef,_ = NewEnemy1Factory(g)
+	g.objects = append(g.objects, g.ef.NewEnemy1d())
+	g.objects = append(g.objects, g.ef.NewEnemy1l())
 	return g, nil
 }
 
