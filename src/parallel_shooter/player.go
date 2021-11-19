@@ -14,7 +14,7 @@ type Player struct {
 
 func NewPlayer(o Object, ca CharacterAttr, i *Input) *Player {
 	pl := &Player{
-		Object: o,
+		Object:        o,
 		CharacterAttr: ca,
 	}
 	pl.input = i
@@ -34,17 +34,19 @@ func (p *Player) command(cmd Command) error {
 	case DirDown:
 		y = p.y + 1
 	case KeySpace:
-		o := Object{game: p.game, x: p.x, y: p.y, height: 5, width:5, phase: p.phase, images: p.shotImages}
-		shot := newShot(o,0,5,1)
+		o := Object{game: p.game, x: p.x, y: p.y, height: 5, width: 5, phase: p.phase, images: p.shotImages}
+		//Bullets go up left.
+		//shot := newShot(o, 1, NewVector(1, 5))
+		shot := newShot(o, 1, NewVector(0, 5))
 		enemies := p.game.getEnemies()
-		for _,e := range enemies {
+		for _, e := range enemies {
 			shot.addEnemy(e)
 		}
 		p.game.setObject(shot)
 	case KeyCtrl:
 		p.game.phaseShift()
 	}
-	a := NewArea(NewPoint(x,y), NewPoint(x+p.width-1, y+p.height-1))
+	a := NewArea(NewPoint(x, y), NewPoint(x+p.width-1, y+p.height-1))
 	if p.game.insideOfScreen(a) {
 		p.x = x
 		p.y = y
@@ -72,8 +74,10 @@ func (p *Player) Draw(img *ebiten.Image) error {
 
 func (p *Player) getx() int { return p.x }
 func (p *Player) gety() int { return p.y }
-func (p *Player) getArea() *Area { return NewArea(NewPoint(p.x, p.y), NewPoint(p.x+p.width-1, p.y+p.height-1)) }
-func (p *Player) getPhase() Phase { return p.phase }
+func (p *Player) getArea() *Area {
+	return NewArea(NewPoint(p.x, p.y), NewPoint(p.x+p.width-1, p.y+p.height-1))
+}
+func (p *Player) getPhase() Phase      { return p.phase }
 func (p *Player) setPhase(phase Phase) { p.phase = phase }
 func (p *Player) hit(damage int) {
 	p.hp -= damage
@@ -86,7 +90,7 @@ func (p *Player) destroy() {
 	p.game.deleteObject(p)
 }
 
-func (p *Player) getImage() *ebiten.Image{
+func (p *Player) getImage() *ebiten.Image {
 	var i *ebiten.Image
 	gPhase := p.game.getPhase()
 	if p.phase == gPhase {

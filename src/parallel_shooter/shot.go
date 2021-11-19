@@ -7,18 +7,16 @@ import (
 type Shot struct {
 	common
 	Object
-	dir int
-	speed int
-	attack int
-	enemies []interface{}
+	velocity Vector
+	attack   int
+	enemies  []interface{}
 }
 
-func newShot(o Object, d,spd,a int) *Shot{
+func newShot(o Object, a int, v Vector) *Shot {
 	s := &Shot{
 		Object: o,
 	}
-	s.dir = d
-	s.speed = spd
+	s.velocity = v
 	s.attack = a
 	s.enemies = []interface{}{}
 	return s
@@ -30,10 +28,11 @@ func (s *Shot) run() {
 		return
 	}
 	prev_y := s.y
-	s.y -= s.speed
-	hitArea := NewArea(NewPoint(s.x,prev_y),NewPoint(s.x+s.width,s.y))
-	for _,o := range s.enemies {
-		e,_ := o.(common)
+	s.y -= int(s.velocity.Y())
+	s.x -= int(s.velocity.X())
+	hitArea := NewArea(NewPoint(s.x, prev_y), NewPoint(s.x+s.width, s.y))
+	for _, o := range s.enemies {
+		e, _ := o.(common)
 		if e.getPhase() == s.phase && hitArea.isHit(e.getArea()) {
 			e.(Characteristic).hit(s.attack)
 			s.destroy()
@@ -41,24 +40,26 @@ func (s *Shot) run() {
 	}
 }
 
-func (s *Shot)Update() error {
+func (s *Shot) Update() error {
 	return nil
 }
 
-func (s *Shot)Draw(img *ebiten.Image) error {
+func (s *Shot) Draw(img *ebiten.Image) error {
 	return nil
 }
 
 func (s *Shot) getx() int { return s.x }
 func (s *Shot) gety() int { return s.y }
-func (s *Shot) getArea() *Area { return NewArea(NewPoint(s.x, s.y), NewPoint(s.x+s.width, s.y+s.height)) }
+func (s *Shot) getArea() *Area {
+	return NewArea(NewPoint(s.x, s.y), NewPoint(s.x+s.width, s.y+s.height))
+}
 
 func (s *Shot) addEnemy(e interface{}) {
 	s.enemies = append(s.enemies, e)
 }
 
 func (s *Shot) deletEnemy(e interface{}) {
-	for _,v := range s.enemies {
+	for _, v := range s.enemies {
 		if v == e {
 			v = nil
 		}

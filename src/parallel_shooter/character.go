@@ -3,6 +3,7 @@ package parallel_shooter
 import (
 	"math/rand"
 	"time"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -11,9 +12,9 @@ type Characteristic interface {
 }
 
 type CharacterAttr struct {
-	hp int
-	score int
-	value int
+	hp         int
+	score      int
+	value      int
 	shotImages *ImageSet
 }
 
@@ -27,7 +28,7 @@ type Character struct {
 
 func NewCharacter(o Object, ca CharacterAttr) *Character {
 	c := &Character{
-		Object: o,
+		Object:        o,
 		CharacterAttr: ca,
 	}
 	source := rand.NewSource(time.Now().UnixNano())
@@ -46,15 +47,15 @@ func (c *Character) command(cmd Command) error {
 	case DirDown:
 		c.y = c.y + 1
 	case KeySpace:
-		o := Object{game: c.game, x: c.x, y: c.y, height: 5, width:5, phase: c.phase, images: c.shotImages}
-		shot := newShot(o,0,-5,1)
+		o := Object{game: c.game, x: c.x, y: c.y, height: 5, width: 5, phase: c.phase, images: c.shotImages}
+		shot := newShot(o, 1, NewVector(0, -5))
 		enemies := c.game.getPlayers()
-		for _,e := range enemies {
+		for _, e := range enemies {
 			shot.addEnemy(e)
 		}
 		c.game.setObject(shot)
-	// case KeyCtrl:
-	// 	c.game.phaseShift()
+		// case KeyCtrl:
+		// 	c.game.phaseShift()
 	}
 	return nil
 }
@@ -90,7 +91,9 @@ func (c *Character) Draw(img *ebiten.Image) error {
 
 func (c *Character) getx() int { return c.x }
 func (c *Character) gety() int { return c.y }
-func (c *Character) getArea() *Area { return NewArea(NewPoint(c.x, c.y), NewPoint(c.x+c.width, c.y+c.height)) }
+func (c *Character) getArea() *Area {
+	return NewArea(NewPoint(c.x, c.y), NewPoint(c.x+c.width, c.y+c.height))
+}
 func (c *Character) getPhase() Phase { return c.phase }
 
 func (c *Character) hit(damage int) {
