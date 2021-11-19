@@ -102,7 +102,6 @@ func (c *Character) hit(damage int) {
 
 func (c *Character) destroy() {
 	c.game.deleteObject(c)
-	c.game.checkGameClear()
 }
 
 func (c *Character) getImage() *ebiten.Image {

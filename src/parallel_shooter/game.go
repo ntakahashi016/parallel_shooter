@@ -28,18 +28,20 @@ type Game struct{
 	clear bool
 	pf *PlayerFactory
 	ef *Enemy1Factory
+	sm *StageManager
 }
 
 func NewGame() (*Game, error) {
 	g := &Game{}
-	g.phase = Light
+	g.phase = Dark
 	g.clear = false
 	g.objects = []interface{}{}
-	g.pf,_ = NewPlayerFactory(g)
+	g.pf = NewPlayerFactory(g)
 	g.objects = append(g.objects, g.pf.NewPlayer())
-	g.ef,_ = NewEnemy1Factory(g)
-	g.objects = append(g.objects, g.ef.NewEnemy1d())
-	g.objects = append(g.objects, g.ef.NewEnemy1l())
+	s1 := NewStrategy(g,NewEnemy1Factory(g),Dark)
+	s2 := NewStrategy(g,NewEnemy1Factory(g),Light)
+	g.sm = NewStageManager(g,[]*Strategy{s1,s2})
+	go g.sm.run()
 	return g, nil
 }
 
@@ -54,9 +56,9 @@ func (g *Game) Update() Mode {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	if g.phase == Light {
-		screen.Fill(color.RGBA{0x00, 0x00, 0x00, 0xff})
-	} else {
 		screen.Fill(color.RGBA{0xff, 0xff, 0xff, 0xff})
+	} else {
+		screen.Fill(color.RGBA{0x00, 0x00, 0x00, 0xff})
 	}
 
 	for _, v := range g.objects {
@@ -77,7 +79,15 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 }
 
 func (g *Game) setObject(o interface{}) {
+	g.mu.Lock()
+	defer g.mu.Unlock()
 	g.objects = append(g.objects, o)
+}
+
+func (g *Game) setObjects(os []interface{}) {
+	g.mu.Lock()
+	defer g.mu.Unlock()
+	g.objects = append(g.objects, os...)
 }
 
 func (g *Game) deleteObject(o interface{}) {
@@ -91,6 +101,17 @@ func (g *Game) deleteObject(o interface{}) {
 		newObjects = append(newObjects, v)
 	}
 	g.objects = newObjects
+}
+
+func (g *Game) isObjectAlive(o interface{}) bool {
+	g.mu.Lock()
+	defer g.mu.Unlock()
+	for _,v := range g.objects {
+		if v == o {
+			return true
+		}
+	}
+	return false
 }
 
 func (g *Game) outOfScreen(a *Area) bool {
@@ -158,14 +179,6 @@ func (g *Game) phaseShift() {
 	}
 }
 
-func (g *Game) checkGameClear() {
-	var flag bool
-	flag = true
-	for _,v := range g.objects {
-		switch v.(type) {
-		case *Character:
-			flag = false
-		}
-	}
-	g.clear = flag
+func (g *Game) stageClear() {
+	g.clear = true
 }
