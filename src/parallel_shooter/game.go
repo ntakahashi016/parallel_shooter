@@ -38,9 +38,10 @@ func NewGame() (*Game, error) {
 	g.objects = []interface{}{}
 	g.pf = NewPlayerFactory(g)
 	g.objects = append(g.objects, g.pf.NewPlayer())
-	s1 := NewStrategy(g,NewEnemy1Factory(g),Dark)
-	s2 := NewStrategy(g,NewEnemy1Factory(g),Light)
-	g.sm = NewStageManager(g,[]*Strategy{s1,s2})
+	s1 := NewEnemy1Strategy(g,NewEnemy1Factory(g),Dark)
+	s2 := NewEnemy1Strategy(g,NewEnemy1Factory(g),Light)
+	s3 := NewBoss1Strategy(g,NewBoss1Factory(g),Dark)
+	g.sm = NewStageManager(g,[]interface{}{s1,s2,s3})
 	go g.sm.run()
 	return g, nil
 }
