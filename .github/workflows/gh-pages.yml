@@ -27,9 +27,9 @@ jobs:
 
       - name: p//s Build
         run: |
-          go get github.com/ntakahashi016/parallel_shooter
           GOOS=js GOARCH=wasm go build -o parallel_shooter.wasm github.com/ntakahashi016/parallel_shooter
           mv ./parallel_shooter.wasm ./public/
+          working-directory: ./parallel_shooter
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
