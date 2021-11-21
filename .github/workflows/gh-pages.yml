@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-20.04
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
@@ -25,12 +25,21 @@ jobs:
       - name: Build
         run: hugo --minify
 
+      - name: set up go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17.1
+
+      - name: Install dependencies
+        run: |
+          go version
+          go get -u golang.org/x/lint/golint
+
       - name: p//s Build
         run: |
-          cd ~/parallel_shooter/src
-          GOOS=js GOARCH=wasm go build -o parallel_shooter.wasm github.com/ntakahashi016/parallel_shooter
-          cd ../
-          mv ./src/parallel_shooter.wasm ./public/
+          GOOS=js GOARCH=wasm go build -o parallel_shooter.wasm .
+          mv ./parallel_shooter.wasm ../public/
+        working-directory: ./src
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
