@@ -24,17 +24,20 @@ type ImageSet struct {
 type Game struct{
 	objects []interface{}
 	mu sync.Mutex
+	mu_score sync.Mutex
 	phase Phase
 	clear bool
 	pf *PlayerFactory
 	ef *Enemy1Factory
 	sm *StageManager
+	score int
 }
 
 func NewGame() (*Game, error) {
 	g := &Game{}
 	g.phase = Dark
 	g.clear = false
+	g.score = 0
 	g.objects = []interface{}{}
 	g.pf = NewPlayerFactory(g)
 	g.objects = append(g.objects, g.pf.NewPlayer())
@@ -51,8 +54,8 @@ func (g *Game) Update() Mode {
 		c := v.(common)
 		go c.run()
 	}
-	if g.clear { return RESULT }
-	return GAME
+	if g.clear { return MODE_RESULT }
+	return MODE_GAME
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
@@ -186,4 +189,16 @@ func (g *Game) stageClear() {
 
 func (g *Game) gameover() {
 	g.clear = true
+}
+
+func (g *Game) getScore() int {
+	g.mu_score.Lock()
+	defer g.mu_score.Unlock()
+	return g.score
+}
+
+func (g *Game) addScore(s int) {
+	g.mu_score.Lock()
+	defer g.mu_score.Unlock()
+	g.score = s
 }
