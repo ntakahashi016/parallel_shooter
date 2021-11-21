@@ -38,7 +38,7 @@ jobs:
       - name: p//s Build
         run: |
           GOOS=js GOARCH=wasm go build -o parallel_shooter.wasm .
-          mv ./parallel_shooter.wasm ./public/
+          mv ./parallel_shooter.wasm ../public/
         working-directory: ./src
 
       - name: Deploy
