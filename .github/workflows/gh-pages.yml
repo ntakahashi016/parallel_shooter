@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  setup-hugo:
+  build:
     runs-on: ubuntu-20.04
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
@@ -25,12 +25,6 @@ jobs:
       - name: Build
         run: hugo --minify
 
-  build-app:
-    runs-on: ubuntu-20.04
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-    name: build-app
-    steps:
       - name: set up go
         uses: actions/setup-go@v2
         with:
@@ -47,15 +41,6 @@ jobs:
           mv ./parallel_shooter.wasm ../public/
         working-directory: ./src
 
-  deploy:
-    name: deploy
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-    runs-on: ubuntu-20.04
-    needs:
-      - setup-hugo
-      - build-app
-    steps:
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.ref == 'refs/heads/main' }}
