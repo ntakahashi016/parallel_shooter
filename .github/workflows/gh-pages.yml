@@ -26,10 +26,10 @@ jobs:
         run: hugo --minify
 
       - name: p//s Build
-        run: cd ~/parallel_shooter/src
-        run: GOOS=js GOARCH=wasm go build -o parallel_shooter.wasm github.com/ntakahashi016/parallel_shooter
-        run: cd ../
-        run: mv ./src/parallel_shooter.wasm ./public/
+        run: cd ~/parallel_shooter/src;\
+        GOOS=js GOARCH=wasm go build -o parallel_shooter.wasm github.com/ntakahashi016/parallel_shooter;\
+        cd ../;\
+        mv ./src/parallel_shooter.wasm ./public/
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
