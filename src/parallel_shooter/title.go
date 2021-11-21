@@ -33,9 +33,9 @@ func NewTitle() (*Title, error) {
 
 func (t *Title) Update() Mode {
 	if cmd, ok := t.input.getCommand(); ok {
-		if cmd == KeySpace { return GAME }
+		if cmd == KeySpace { return MODE_GAME }
 	}
-	return TITLE
+	return MODE_TITLE
 }
 
 func (t *Title) Draw(screen *ebiten.Image) {

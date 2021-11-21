@@ -83,7 +83,9 @@ func (p *Player) hit(damage int) {
 }
 
 func (p *Player) destroy() {
+	p.game.addScore(p.score)
 	p.game.deleteObject(p)
+	p.game.gameover()
 }
 
 func (p *Player) getImage() *ebiten.Image{
