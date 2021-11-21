@@ -183,3 +183,7 @@ func (g *Game) phaseShift() {
 func (g *Game) stageClear() {
 	g.clear = true
 }
+
+func (g *Game) gameover() {
+	g.clear = true
+}
