@@ -26,6 +26,7 @@ jobs:
         run: hugo --minify
 
   build-app:
+    runs-on: ubuntu-20.04
     name: build-app
     steps:
       - name: set up go
