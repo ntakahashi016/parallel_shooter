@@ -47,6 +47,7 @@ jobs:
 
   deploy:
     name: deploy
+    runs-on: ubuntu-20.04
     needs:
       - setup-hugo
       - build-app
