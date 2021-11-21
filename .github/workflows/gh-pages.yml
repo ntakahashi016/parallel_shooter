@@ -27,6 +27,8 @@ jobs:
 
   build-app:
     runs-on: ubuntu-20.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
     name: build-app
     steps:
       - name: set up go
@@ -47,6 +49,8 @@ jobs:
 
   deploy:
     name: deploy
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
     runs-on: ubuntu-20.04
     needs:
       - setup-hugo
