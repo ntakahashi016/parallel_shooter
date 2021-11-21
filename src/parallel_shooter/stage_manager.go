@@ -2,10 +2,10 @@ package parallel_shooter
 
 type StageManager struct {
 	game *Game
-	strategies []*Strategy
+	strategies []interface{}
 }
 
-func NewStageManager(g *Game, s []*Strategy) *StageManager {
+func NewStageManager(g *Game, s []interface{}) *StageManager {
 	sm := &StageManager{}
 	sm.game = g
 	sm.strategies = s
@@ -16,7 +16,8 @@ func (sm *StageManager) run() {
 	results := []bool{}
 	ch := make(chan bool)
 	for _,s := range sm.strategies {
-		go s.run(ch)
+		strategy,_ := s.(Strategy)
+		go strategy.run(ch)
 		res := <-ch
 		results = append(results, res)
 	}
