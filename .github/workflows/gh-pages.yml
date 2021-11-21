@@ -25,11 +25,20 @@ jobs:
       - name: Build
         run: hugo --minify
 
+      - name: set up go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ‘1.17.1
+
+      - name: Install dependencies
+        run: |
+          go version
+          go get -u golang.org/x/lint/golint
+
       - name: p//s Build
         run: |
-          GOOS=js GOARCH=wasm go build -o parallel_shooter.wasm github.com/ntakahashi016/parallel_shooter
+          GOOS=js GOARCH=wasm go build -o parallel_shooter.wasm .
           mv ./parallel_shooter.wasm ./public/
-          working-directory: ./parallel_shooter
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
