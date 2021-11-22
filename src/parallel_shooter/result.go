@@ -26,8 +26,9 @@ func NewResult() (*Result, error) {
 }
 
 func (r *Result) Update() Mode {
-	if cmd, ok := r.input.getCommand(); ok {
-		if cmd == KeySpace { return MODE_TITLE }
+	commands := r.input.getCommands()
+	for _, command := range commands {
+		if command == KeySpace { return MODE_TITLE }
 	}
 	return MODE_RESULT
 }
