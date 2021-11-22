@@ -12,7 +12,7 @@ import (
 	"golang.org/x/image/font/opentype"
 )
 
-const TitleLogoFilePath string = "../images/title_logo.png"
+const TitleLogoFilePath string = "./images/title_logo.png"
 var mplusNormalFont font.Face
 
 type Title struct {
