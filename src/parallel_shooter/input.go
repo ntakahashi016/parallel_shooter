@@ -16,14 +16,6 @@ const (
 	KeyCtrl
 )
 
-type mouseState int
-
-const (
-	mouseStateNone mouseState = iota
-	mouseStatePressing
-	mouseStateSettled
-)
-
 type touchState int
 
 const (
@@ -32,24 +24,6 @@ const (
 	touchStateSettled
 	touchStateInvalid
 )
-
-func (c Command) String() string {
-	switch c {
-	case DirUp:
-		return "Up"
-	case DirRight:
-		return "Right"
-	case DirDown:
-		return "Down"
-	case DirLeft:
-		return "Left"
-	case KeySpace:
-		return "Shot"
-	case KeyCtrl:
-		return "Phase shift"
-	}
-	panic("not reach")
-}
 
 func (c Command) Vector() (x, y int) {
 	switch c {
@@ -66,11 +40,6 @@ func (c Command) Vector() (x, y int) {
 }
 
 type Input struct {
-	mouseState    mouseState
-	mouseInitPosX int
-	mouseInitPosY int
-	mouseDir      Command
-
 	touches       []ebiten.TouchID
 	touchState    touchState
 	touchID       ebiten.TouchID
@@ -109,31 +78,6 @@ func vecToDir(dx, dy int) (Command, bool) {
 }
 
 func (i *Input) Update() {
-	switch i.mouseState {
-	case mouseStateNone:
-		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-			x, y := ebiten.CursorPosition()
-			i.mouseInitPosX = x
-			i.mouseInitPosY = y
-			i.mouseState = mouseStatePressing
-		}
-	case mouseStatePressing:
-		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-			x, y := ebiten.CursorPosition()
-			dx := x - i.mouseInitPosX
-			dy := y - i.mouseInitPosY
-			d, ok := vecToDir(dx, dy)
-			if !ok {
-				i.mouseState = mouseStateNone
-				break
-			}
-			i.mouseDir = d
-			i.mouseState = mouseStateSettled
-		}
-	case mouseStateSettled:
-		i.mouseState = mouseStateNone
-	}
-
 	i.touches = ebiten.AppendTouchIDs(i.touches[:0])
 	switch i.touchState {
 	case touchStateNone:
@@ -207,12 +151,6 @@ func (i *Input) getCommand() (Command, bool) {
 	}
 	if repeatingKeyPressed(ebiten.KeyArrowDown) {
 		return DirDown, true
-	}
-	if i.mouseState == mouseStateSettled {
-		return i.mouseDir, true
-	}
-	if i.touchState == touchStateSettled {
-		return i.touchDir, true
 	}
 	if repeatingKeyPressed(ebiten.KeySpace) {
 		return KeySpace, true
