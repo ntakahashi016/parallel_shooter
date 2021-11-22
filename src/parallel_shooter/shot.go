@@ -85,3 +85,8 @@ func (s *Shot) getImage() *ebiten.Image {
 func (s *Shot) destroy() {
 	s.game.deleteObject(s)
 }
+
+func (s *Shot) setCenter(a *Area) {
+	s.x = (a.p2.x - a.p1.x) / 2 + a.p1.x - s.width / 2
+	s.y = (a.p2.y - a.p1.y) / 2 + a.p1.y - s.height / 2
+}

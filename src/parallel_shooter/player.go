@@ -38,6 +38,7 @@ func (p *Player) command(cmd Command) {
 		//Bullets go up left.
 		//shot := newShot(o, 1, NewVector(1, 5))
 		shot := newShot(o, 1, NewVector(0, 5))
+		shot.setCenter(p.getArea())
 		enemies := p.game.getEnemies()
 		for _, e := range enemies {
 			shot.addEnemy(e)
