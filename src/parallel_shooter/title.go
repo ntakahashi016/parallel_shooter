@@ -32,8 +32,9 @@ func NewTitle() (*Title, error) {
 }
 
 func (t *Title) Update() Mode {
-	if cmd, ok := t.input.getCommand(); ok {
-		if cmd == KeySpace { return MODE_GAME }
+	commands := t.input.getCommands()
+	for _, command := range commands {
+		if command == KeySpace { return MODE_GAME }
 	}
 	return MODE_TITLE
 }

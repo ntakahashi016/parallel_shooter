@@ -12,16 +12,16 @@ type Player struct {
 	input *Input
 }
 
-func NewPlayer(o Object, ca CharacterAttr, i *Input) *Player {
+func NewPlayer(o Object, ca CharacterAttr, input *Input) *Player {
 	pl := &Player{
 		Object:        o,
 		CharacterAttr: ca,
 	}
-	pl.input = i
+	pl.input = input
 	return pl
 }
 
-func (p *Player) command(cmd Command) error {
+func (p *Player) command(cmd Command) {
 	x := p.x
 	y := p.y
 	switch cmd {
@@ -55,7 +55,6 @@ func (p *Player) command(cmd Command) error {
 		p.x = rp.x
 		p.y = rp.y
 	}
-	return nil
 }
 
 func (p *Player) Update() error {
@@ -63,10 +62,12 @@ func (p *Player) Update() error {
 }
 
 func (p *Player) run() {
-	if cmd, ok := p.input.getCommand(); ok {
-		p.command(cmd)
+	commands := p.input.getCommands()
+	for _, command := range commands {
+		p.command(command)
 	}
 }
+
 
 func (p *Player) Draw(img *ebiten.Image) error {
 	return nil
