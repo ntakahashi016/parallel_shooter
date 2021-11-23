@@ -2,6 +2,7 @@ package parallel_shooter
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"math"
 )
 
 type Player struct {
@@ -10,6 +11,8 @@ type Player struct {
 	Characteristic
 	CharacterAttr
 	input *Input
+	velocity Vector
+	direction float64
 }
 
 func NewPlayer(o Object, ca CharacterAttr, input *Input) *Player {
@@ -18,26 +21,18 @@ func NewPlayer(o Object, ca CharacterAttr, input *Input) *Player {
 		CharacterAttr: ca,
 	}
 	pl.input = input
+	pl.velocity = NewVector(0,0)
+	pl.direction = 1.5 * math.Pi
 	return pl
 }
 
 func (p *Player) command(cmd Command) {
-	x := p.x
-	y := p.y
 	switch cmd {
-	case DirUp:
-		y = p.y - 1
-	case DirLeft:
-		x = p.x - 1
-	case DirRight:
-		x = p.x + 1
-	case DirDown:
-		y = p.y + 1
 	case KeySpace:
 		o := Object{game: p.game, x: p.x, y: p.y, height: 5, width: 5, phase: p.phase, images: p.shotImages}
 		//Bullets go up left.
 		//shot := newShot(o, 1, NewVector(1, 5))
-		shot := newShot(o, 1, NewVector(0, 5))
+		shot := newShot(o, 1, NewVector(math.Cos(p.direction)*5, math.Sin(p.direction)*5))
 		shot.setCenter(p.getArea())
 		enemies := p.game.getEnemies()
 		for _, e := range enemies {
@@ -47,7 +42,14 @@ func (p *Player) command(cmd Command) {
 	case KeyCtrl:
 		p.game.phaseShift()
 	}
+}
+func (p *Player) move(v Vector) {
+	x := p.x + int(v.X())
+	y := p.y + int(v.Y())
 	a := NewArea(NewPoint(x, y), NewPoint(x+p.width-1, y+p.height-1))
+	if p.x!=x || p.y!=y {
+		p.direction = math.Atan2(v.Y(), v.X())
+	}
 	if p.game.insideOfScreen(a) {
 		p.x = x
 		p.y = y
@@ -67,6 +69,8 @@ func (p *Player) run() {
 	for _, command := range commands {
 		p.command(command)
 	}
+	vector := p.input.getVector()
+	p.move(vector)
 }
 
 
