@@ -19,6 +19,8 @@ type Vector interface {
 	 * Vector{3.0, 10.0}.Diff(Vector{10.0, 2.0}) => Vector{7.0, -8.0}
 	 */
 	Diff(other Vector) Vector
+
+	Add(other Vector) Vector
 }
 
 func NewVector(x, y float64) Vector {
@@ -47,4 +49,8 @@ func (v *vector) Magnitude() float64 {
 }
 func (v *vector) Diff(other Vector) Vector {
 	return NewVector(other.X()-v.x, other.Y()-v.y)
+}
+
+func (v *vector) Add(other Vector) Vector {
+	return NewVector(other.X()+v.x, other.Y()+v.y)
 }

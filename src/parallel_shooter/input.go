@@ -54,4 +54,20 @@ func (i *Input) getCommands() []Command {
 	return commands
 }
 
-
+func (i *Input) getVector() Vector {
+	i.Update()
+	v := NewVector(0, 0)
+	for _, k := range i.keys {
+		switch k {
+		case ebiten.KeyArrowUp:
+			v = v.Add(NewVector(0, -1))
+		case ebiten.KeyArrowLeft:
+			v = v.Add(NewVector(-1, 0))
+		case ebiten.KeyArrowRight:
+			v = v.Add(NewVector(1, 0))
+		case ebiten.KeyArrowDown:
+			v = v.Add(NewVector(0, 1))
+		}
+	}
+	return v
+}

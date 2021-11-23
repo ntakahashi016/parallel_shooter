@@ -48,7 +48,7 @@ func (c *Character) command(cmd Command) error {
 		c.y = c.y + 1
 	case KeySpace:
 		o := Object{game: c.game, x: c.x, y: c.y, height: 5, width: 5, phase: c.phase, images: c.shotImages}
-		shot := newShot(o, 1, NewVector(0, -5))
+		shot := newShot(o, 1, NewVector(0, 5))
 		shot.setCenter(c.getArea())
 		enemies := c.game.getPlayers()
 		for _, e := range enemies {

@@ -28,8 +28,8 @@ func (s *Shot) run() {
 		return
 	}
 	prev_y := s.y
-	s.y -= int(s.velocity.Y())
-	s.x -= int(s.velocity.X())
+	s.y += int(s.velocity.Y())
+	s.x += int(s.velocity.X())
 	hitArea := NewArea(NewPoint(s.x, prev_y), NewPoint(s.x+s.width, s.y))
 	for _, o := range s.enemies {
 		e, _ := o.(common)
