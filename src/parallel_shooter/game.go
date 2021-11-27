@@ -3,7 +3,6 @@ package parallel_shooter
 import (
 	"image/color"
 	"github.com/hajimehoshi/ebiten/v2"
-	"sync"
 )
 
 const width = 640
@@ -23,21 +22,17 @@ type ImageSet struct {
 
 type Game struct{
 	objects []interface{}
-	mu sync.Mutex
-	mu_score sync.Mutex
 	phase Phase
 	clear bool
 	pf *PlayerFactory
 	ef *Enemy1Factory
 	sm *StageManager
-	score int
 }
 
 func NewGame() (*Game, error) {
 	g := &Game{}
 	g.phase = Dark
 	g.clear = false
-	g.score = 0
 	g.objects = []interface{}{}
 	g.pf = NewPlayerFactory(g)
 	g.objects = append(g.objects, g.pf.NewPlayer())
@@ -45,14 +40,14 @@ func NewGame() (*Game, error) {
 	s2 := NewEnemy1Strategy(g,NewEnemy1Factory(g),Light)
 	s3 := NewBoss1Strategy(g,NewBoss1Factory(g),Dark)
 	g.sm = NewStageManager(g,[]interface{}{s1,s2,s3})
-	go g.sm.run()
+	g.sm.run()
 	return g, nil
 }
 
 func (g *Game) Update() Mode {
 	for _,v := range g.objects {
 		c := v.(common)
-		go c.run()
+		c.run()
 	}
 	if g.clear { return MODE_RESULT }
 	return MODE_GAME
@@ -66,13 +61,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 
 	for _, v := range g.objects {
-		g.mu.Lock()
 		c := v.(common)
-		// c.Draw(c.getImage())
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(float64(c.getx()), float64(c.gety()))
 		screen.DrawImage(c.getImage(),op)
-		g.mu.Unlock()
 	}
 }
 
@@ -83,20 +75,14 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 }
 
 func (g *Game) setObject(o interface{}) {
-	g.mu.Lock()
-	defer g.mu.Unlock()
 	g.objects = append(g.objects, o)
 }
 
 func (g *Game) setObjects(os []interface{}) {
-	g.mu.Lock()
-	defer g.mu.Unlock()
 	g.objects = append(g.objects, os...)
 }
 
 func (g *Game) deleteObject(o interface{}) {
-	g.mu.Lock()
-	defer g.mu.Unlock()
 	newObjects := []interface{}{}
 	for _,v := range g.objects {
 		if v == o {
@@ -108,8 +94,6 @@ func (g *Game) deleteObject(o interface{}) {
 }
 
 func (g *Game) isObjectAlive(o interface{}) bool {
-	g.mu.Lock()
-	defer g.mu.Unlock()
 	for _,v := range g.objects {
 		if v == o {
 			return true
@@ -191,14 +175,3 @@ func (g *Game) gameover() {
 	g.clear = true
 }
 
-func (g *Game) getScore() int {
-	g.mu_score.Lock()
-	defer g.mu_score.Unlock()
-	return g.score
-}
-
-func (g *Game) addScore(s int) {
-	g.mu_score.Lock()
-	defer g.mu_score.Unlock()
-	g.score = s
-}

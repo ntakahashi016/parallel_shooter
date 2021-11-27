@@ -105,7 +105,6 @@ func (c *Character) hit(damage int) {
 }
 
 func (c *Character) destroy() {
-	c.game.addScore(c.score)
 	c.game.deleteObject(c)
 }
 
