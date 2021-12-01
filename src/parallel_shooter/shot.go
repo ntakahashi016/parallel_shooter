@@ -71,9 +71,9 @@ func (s *Shot) getImage() *ebiten.Image {
 	gPhase := s.game.getPhase()
 	if s.phase == gPhase {
 		switch gPhase {
-		case Light:
+		case LIGHT_PHASE:
 			i = s.images.light
-		case Dark:
+		case DARK_PHASE:
 			i = s.images.dark
 		}
 	} else {

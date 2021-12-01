@@ -2,15 +2,13 @@ package parallel_shooter
 
 type StrategyStatus int
 const (
-	INIT StrategyStatus = iota
-	RUNNING
-	DONE
-	CLEAR
+	STRATEGY_INIT StrategyStatus = iota
+	STRATEGY_RUNNING
+	STRATEGY_CLEAR
 )
 
 type Strategy interface {
-	getStatus() (StrategyStatus)
-	run(ch chan bool)
+	run() StrategyStatus
 	isAnyoneAlive() bool
-	allOutOfScreen() bool
+	Status() StrategyStatus
 }

@@ -1,67 +1,45 @@
 package parallel_shooter
 
-import (
-	"time"
-)
-
 type Enemy1Strategy struct {
 	Strategy
 	game *Game
 	status StrategyStatus
 	ef *Enemy1Factory
-	phase Phase
 	enemies []*Character
 }
 
-func NewEnemy1Strategy(g *Game,ef *Enemy1Factory, p Phase) *Enemy1Strategy {
+func NewEnemy1Strategy(g *Game, ef *Enemy1Factory) *Enemy1Strategy {
 	s := &Enemy1Strategy{}
 	s.game = g
-	s.status = INIT
+	s.status = STRATEGY_INIT
 	s.ef = ef
-	s.phase = p
 	return s
 }
 
-func (s *Enemy1Strategy) getStatus() (StrategyStatus) {
+func (s *Enemy1Strategy) run() StrategyStatus {
+	switch s.status {
+	case STRATEGY_INIT:
+		s.enemies = append(s.enemies, s.ef.NewObject(200,100,DARK_PHASE))
+		s.enemies = append(s.enemies, s.ef.NewObject(150,100,DARK_PHASE))
+		s.enemies = append(s.enemies, s.ef.NewObject(100,100,DARK_PHASE))
+		for _,e := range s.enemies {
+			s.game.setObject(e)
+		}
+		s.status = STRATEGY_RUNNING
+	case STRATEGY_RUNNING:
+		if !s.isAnyoneAlive() {
+			s.status = STRATEGY_CLEAR
+		}
+	}
 	return s.status
 }
 
-func (s *Enemy1Strategy) run(ch chan bool) {
-	s.status = RUNNING
-	s.enemies = append(s.enemies, s.ef.NewEnemy1(200,100,s.phase))
-	s.enemies = append(s.enemies, s.ef.NewEnemy1(150,100,s.phase))
-	s.enemies = append(s.enemies, s.ef.NewEnemy1(100,100,s.phase))
-	for _,e := range s.enemies {
-		s.game.setObject(e)
-		time.Sleep(time.Second * 3)
-	}
-	for s.isAnyoneAlive() {
-		if s.allOutOfScreen() {
-			s.status = DONE
-			ch <- true
-			return
-		}
-	time.Sleep(time.Second)
-	}
-	s .status = CLEAR
-	ch <- true
-	return
-}
-
 func (s *Enemy1Strategy) isAnyoneAlive() bool {
+	result := false
 	for _,e := range s.enemies {
-		if s.game.isObjectAlive(e) {
-			return true
-		}
+		result = result || s.game.isObjectAlive(e)
 	}
-	return false
+	return result
 }
 
-func (s *Enemy1Strategy) allOutOfScreen() bool {
-	for _,e := range s.enemies {
-		if !s.game.outOfScreen(e.getArea()) {
-			return false
-		}
-	}
-	return true
-}
+func (s *Enemy1Strategy) Status() StrategyStatus { return s.status }

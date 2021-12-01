@@ -10,8 +10,8 @@ const height = 480
 
 type Phase int
 const (
-	Light Phase = iota
-	Dark
+	LIGHT_PHASE Phase = iota
+	DARK_PHASE
 )
 
 type ImageSet struct {
@@ -31,20 +31,20 @@ type Game struct{
 
 func NewGame() (*Game, error) {
 	g := &Game{}
-	g.phase = Dark
+	g.phase = DARK_PHASE
 	g.clear = false
 	g.objects = []interface{}{}
 	g.pf = NewPlayerFactory(g)
 	g.objects = append(g.objects, g.pf.NewPlayer())
-	s1 := NewEnemy1Strategy(g,NewEnemy1Factory(g),Dark)
-	s2 := NewEnemy1Strategy(g,NewEnemy1Factory(g),Light)
-	s3 := NewBoss1Strategy(g,NewBoss1Factory(g),Dark)
+	s1 := NewEnemy1Strategy(g,NewEnemy1Factory(g))
+	s2 := NewEnemy1Strategy(g,NewEnemy1Factory(g))
+	s3 := NewBoss1Strategy(g,NewBoss1Factory(g))
 	g.sm = NewStageManager(g,[]interface{}{s1,s2,s3})
-	g.sm.run()
 	return g, nil
 }
 
 func (g *Game) Update() Mode {
+	g.sm.Update()
 	for _,v := range g.objects {
 		c := v.(common)
 		c.run()
@@ -54,7 +54,7 @@ func (g *Game) Update() Mode {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	if g.phase == Light {
+	if g.phase == LIGHT_PHASE {
 		screen.Fill(color.RGBA{0xff, 0xff, 0xff, 0xff})
 	} else {
 		screen.Fill(color.RGBA{0x00, 0x00, 0x00, 0xff})
@@ -156,10 +156,10 @@ func (g *Game) getPlayers() []*Player {
 func (g *Game) getPhase() Phase { return g.phase }
 
 func (g *Game) phaseShift() {
-	if g.phase == Light {
-		g.phase = Dark
+	if g.phase == LIGHT_PHASE {
+		g.phase = DARK_PHASE
 	} else {
-		g.phase = Light
+		g.phase = LIGHT_PHASE
 	}
 	players := g.getPlayers()
 	for _,p := range players {

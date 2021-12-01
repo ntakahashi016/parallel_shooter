@@ -15,8 +15,7 @@ type updatable interface {
 type Mode int
 
 const (
-	MODE_INIT Mode = iota
-	MODE_TITLE
+	MODE_TITLE Mode = iota
 	MODE_GAME
 	MODE_RESULT
 )
@@ -38,16 +37,19 @@ func (m *Manager) Update() error {
 	next := m.current.(updatable).Update()
 	switch m.mode {
 	case MODE_TITLE:
-		if m.mode != next {
-			m.current,_ = NewTitle()
-		}
-	case MODE_GAME:
-		if m.mode != next {
+		switch next {
+		case MODE_GAME:
 			m.current,_ = NewGame()
 		}
-	case MODE_RESULT:
-		if m.mode != next {
+	case MODE_GAME:
+		switch next {
+		case MODE_RESULT:
 			m.current,_ = NewResult()
+		}
+	case MODE_RESULT:
+		switch next {
+		case MODE_TITLE:
+			m.current,_ = NewTitle()
 		}
 	}
 	m.mode = next
