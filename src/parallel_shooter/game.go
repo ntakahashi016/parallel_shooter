@@ -102,17 +102,11 @@ func (g *Game) isObjectAlive(o interface{}) bool {
 }
 
 func (g *Game) outOfScreen(a *Area) bool {
-	if (a.p2.x < 0 || width <= a.p1.x) || (a.p2.y < 0 || height <= a.p1.y) {
-		return true
-	}
-	return false
+	return (a.p2.x < 0 || width <= a.p1.x || a.p2.y < 0 || height <= a.p1.y)
 }
 
 func (g *Game) insideOfScreen(a *Area) bool {
-	if (a.p1.x >= 0 && width > a.p2.x) && (a.p1.y >= 0 && height > a.p2.y) {
-		return true
-	}
-	return false
+	return (a.p1.x >= 0 && width > a.p2.x && a.p1.y >= 0 && height > a.p2.y)
 }
 
 func (g *Game) repointOnScreen(a *Area) Point {
