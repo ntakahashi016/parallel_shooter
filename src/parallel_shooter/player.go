@@ -58,9 +58,6 @@ func (p *Player) move(v Vector) {
 
 func (p *Player) Update() {
 	commands := p.input.getCommands()
-	// for _, command := range commands {
-	// 	p.command(command)
-	// }
 	for len(commands) > 0 {
 		command := commands[0]
 		commands = commands[1:]
