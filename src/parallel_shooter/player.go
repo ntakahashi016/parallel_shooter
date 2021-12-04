@@ -6,7 +6,7 @@ import (
 )
 
 type Player struct {
-	common
+	Common
 	Object
 	Characteristic
 	CharacterAttr
@@ -31,7 +31,7 @@ func (p *Player) command(cmd Command) {
 	case KeySpace:
 		o := Object{game: p.game, x: p.x, y: p.y, height: 5, width: 5, phase: p.phase, images: p.shotImages}
 		shot := newShot(o, 1, NewVector(math.Cos(p.direction)*5, math.Sin(p.direction)*5))
-		shot.setCenter(p.getArea())
+		shot.setCenter(p.Area())
 		enemies := p.game.getEnemies()
 		for _, e := range enemies {
 			shot.addEnemy(e)
@@ -82,12 +82,12 @@ func (p *Player) Draw(img *ebiten.Image) error {
 	return nil
 }
 
-func (p *Player) getx() int { return p.x }
-func (p *Player) gety() int { return p.y }
-func (p *Player) getArea() *Area {
+func (p *Player) X() int { return p.x }
+func (p *Player) Y() int { return p.y }
+func (p *Player) Area() *Area {
 	return NewArea(NewPoint(p.x, p.y), NewPoint(p.x+p.width-1, p.y+p.height-1))
 }
-func (p *Player) getPhase() Phase      { return p.phase }
+func (p *Player) Phase() Phase      { return p.phase }
 func (p *Player) setPhase(phase Phase) { p.phase = phase }
 func (p *Player) hit(damage int) {
 	p.hp -= damage
@@ -101,7 +101,7 @@ func (p *Player) destroy() {
 	p.game.gameover()
 }
 
-func (p *Player) getImage() *ebiten.Image {
+func (p *Player) Image() *ebiten.Image {
 	var i *ebiten.Image
 	gPhase := p.game.getPhase()
 	if p.phase == gPhase {

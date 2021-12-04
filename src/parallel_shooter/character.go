@@ -20,7 +20,7 @@ type CharacterAttr struct {
 }
 
 type Character struct {
-	common
+	Common
 	Object
 	Characteristic
 	CharacterAttr
@@ -43,7 +43,7 @@ func (c *Character) command(cmd Command) error {
 	case KeySpace:
 		o := Object{game: c.game, x: c.x, y: c.y, height: 5, width: 5, phase: c.phase, images: c.shotImages}
 		shot := newShot(o, 1, NewVector(0, 5))
-		shot.setCenter(c.getArea())
+		shot.setCenter(c.Area())
 		enemies := c.game.getPlayers()
 		for _, e := range enemies {
 			shot.addEnemy(e)
@@ -70,7 +70,7 @@ func (c *Character) Update() error {
 }
 
 func (c *Character) run() {
-	if c.game.outOfScreen(c.getArea()) {
+	if c.game.outOfScreen(c.Area()) {
 		c.game.deleteObject(c)
 		return
 	}
@@ -98,12 +98,12 @@ func (c *Character) Draw(img *ebiten.Image) error {
 	return nil
 }
 
-func (c *Character) getx() int { return c.x }
-func (c *Character) gety() int { return c.y }
-func (c *Character) getArea() *Area {
+func (c *Character) X() int { return c.x }
+func (c *Character) Y() int { return c.y }
+func (c *Character) Area() *Area {
 	return NewArea(NewPoint(c.x, c.y), NewPoint(c.x+c.width, c.y+c.height))
 }
-func (c *Character) getPhase() Phase { return c.phase }
+func (c *Character) Phase() Phase { return c.phase }
 
 func (c *Character) hit(damage int) {
 	c.hp -= damage
@@ -116,7 +116,7 @@ func (c *Character) destroy() {
 	c.game.deleteObject(c)
 }
 
-func (c *Character) getImage() *ebiten.Image {
+func (c *Character) Image() *ebiten.Image {
 	var i *ebiten.Image
 	gPhase := c.game.getPhase()
 	if c.phase == gPhase {

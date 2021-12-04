@@ -14,14 +14,14 @@ type Object struct {
 	images *ImageSet
 }
 
-type common interface {
+type Common interface {
 	run()
 
 	Draw(img *ebiten.Image) error
-	getx() int
-	gety() int
-	getArea() *Area
-	getPhase() Phase
-	getImage() *ebiten.Image
+	X() int
+	Y() int
+	Area() *Area
+	Phase() Phase
+	Image() *ebiten.Image
 }
 

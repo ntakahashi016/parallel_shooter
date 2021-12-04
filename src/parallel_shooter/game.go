@@ -46,7 +46,7 @@ func NewGame() (*Game, error) {
 func (g *Game) Update() Mode {
 	g.sm.Update()
 	for _,v := range g.objects {
-		c := v.(common)
+		c := v.(Common)
 		c.run()
 	}
 	if g.clear { return MODE_RESULT }
@@ -61,10 +61,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 
 	for _, v := range g.objects {
-		c := v.(common)
+		c := v.(Common)
 		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(float64(c.getx()), float64(c.gety()))
-		screen.DrawImage(c.getImage(),op)
+		op.GeoM.Translate(float64(c.X()), float64(c.Y()))
+		screen.DrawImage(c.Image(),op)
 	}
 }
 

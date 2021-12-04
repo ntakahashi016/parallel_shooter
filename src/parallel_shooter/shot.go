@@ -5,7 +5,7 @@ import (
 )
 
 type Shot struct {
-	common
+	Common
 	Object
 	velocity Vector
 	attack   int
@@ -23,7 +23,7 @@ func newShot(o Object, a int, v Vector) *Shot {
 }
 
 func (s *Shot) run() {
-	if s.game.outOfScreen(s.getArea()) {
+	if s.game.outOfScreen(s.Area()) {
 		s.game.deleteObject(s)
 		return
 	}
@@ -32,8 +32,8 @@ func (s *Shot) run() {
 	s.x += int(s.velocity.X())
 	hitArea := NewArea(NewPoint(s.x, prev_y), NewPoint(s.x+s.width, s.y))
 	for _, o := range s.enemies {
-		e, _ := o.(common)
-		if e.getPhase() == s.phase && hitArea.isHit(e.getArea()) {
+		e, _ := o.(Common)
+		if e.Phase() == s.phase && hitArea.isHit(e.Area()) {
 			e.(Characteristic).hit(s.attack)
 			s.destroy()
 		}
@@ -48,9 +48,9 @@ func (s *Shot) Draw(img *ebiten.Image) error {
 	return nil
 }
 
-func (s *Shot) getx() int { return s.x }
-func (s *Shot) gety() int { return s.y }
-func (s *Shot) getArea() *Area {
+func (s *Shot) X() int { return s.x }
+func (s *Shot) Y() int { return s.y }
+func (s *Shot) Area() *Area {
 	return NewArea(NewPoint(s.x, s.y), NewPoint(s.x+s.width, s.y+s.height))
 }
 
@@ -66,7 +66,7 @@ func (s *Shot) deletEnemy(e interface{}) {
 	}
 }
 
-func (s *Shot) getImage() *ebiten.Image {
+func (s *Shot) Image() *ebiten.Image {
 	var i *ebiten.Image
 	gPhase := s.game.getPhase()
 	if s.phase == gPhase {
