@@ -41,6 +41,7 @@ func (p *Player) command(cmd Command) {
 		p.game.phaseShift()
 	}
 }
+
 func (p *Player) move(v Vector) {
 	x := p.x + int(v.X())
 	y := p.y + int(v.Y())
@@ -64,7 +65,12 @@ func (p *Player) Update() error {
 
 func (p *Player) run() {
 	commands := p.input.getCommands()
-	for _, command := range commands {
+	// for _, command := range commands {
+	// 	p.command(command)
+	// }
+	for len(commands) > 0 {
+		command := commands[0]
+		commands = commands[1:]
 		p.command(command)
 	}
 	vector := p.input.getVector()

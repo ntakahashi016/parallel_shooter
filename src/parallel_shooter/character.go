@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"math"
 )
 
 type Characteristic interface {
@@ -24,6 +25,7 @@ type Character struct {
 	Characteristic
 	CharacterAttr
 	rand *rand.Rand
+	direction float64
 }
 
 func NewCharacter(o Object, ca CharacterAttr) *Character {
@@ -38,14 +40,6 @@ func NewCharacter(o Object, ca CharacterAttr) *Character {
 
 func (c *Character) command(cmd Command) error {
 	switch cmd {
-	case DirUp:
-		c.y = c.y - 1
-	case DirLeft:
-		c.x = c.x - 1
-	case DirRight:
-		c.x = c.x + 1
-	case DirDown:
-		c.y = c.y + 1
 	case KeySpace:
 		o := Object{game: c.game, x: c.x, y: c.y, height: 5, width: 5, phase: c.phase, images: c.shotImages}
 		shot := newShot(o, 1, NewVector(0, 5))
@@ -61,6 +55,16 @@ func (c *Character) command(cmd Command) error {
 	return nil
 }
 
+func (c *Character) move(v Vector) {
+	x := c.x + int(v.X())
+	y := c.y + int(v.Y())
+	if c.x!=x || c.y!=y {
+		c.direction = math.Atan2(v.Y(), v.X())
+	}
+	c.x = x
+	c.y = y
+}
+
 func (c *Character) Update() error {
 	return nil
 }
@@ -71,19 +75,23 @@ func (c *Character) run() {
 		return
 	}
 	var cmd Command
-	switch c.rand.Intn(5) {
+	switch c.rand.Intn(100) {
 	case 0:
-		cmd = DirUp
-	case 1:
-		cmd = DirRight
-	case 2:
-		cmd = DirDown
-	case 3:
-		cmd = DirLeft
-	case 4:
 		cmd = KeySpace
 	}
 	c.command(cmd)
+	var vector Vector
+	switch c.rand.Intn(4) {
+	case 0:
+		vector = NewVector(0,-1)
+	case 1:
+		vector = NewVector(1,0)
+	case 2:
+		vector = NewVector(0,1)
+	case 3:
+		vector = NewVector(-1,0)
+	}
+	c.move(vector)
 }
 
 func (c *Character) Draw(img *ebiten.Image) error {
