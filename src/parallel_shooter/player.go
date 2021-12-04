@@ -30,8 +30,6 @@ func (p *Player) command(cmd Command) {
 	switch cmd {
 	case KeySpace:
 		o := Object{game: p.game, x: p.x, y: p.y, height: 5, width: 5, phase: p.phase, images: p.shotImages}
-		//Bullets go up left.
-		//shot := newShot(o, 1, NewVector(1, 5))
 		shot := newShot(o, 1, NewVector(math.Cos(p.direction)*5, math.Sin(p.direction)*5))
 		shot.setCenter(p.getArea())
 		enemies := p.game.getEnemies()

@@ -85,10 +85,9 @@ func (g *Game) setObjects(os []interface{}) {
 func (g *Game) deleteObject(o interface{}) {
 	newObjects := []interface{}{}
 	for _,v := range g.objects {
-		if v == o {
-			continue
+		if v != o {
+			newObjects = append(newObjects, v)
 		}
-		newObjects = append(newObjects, v)
 	}
 	g.objects = newObjects
 }
@@ -132,25 +131,25 @@ func (g *Game) repointOnScreen(a *Area) Point {
 }
 
 func (g *Game) getEnemies() []*Character {
-	var enemies []*Character
+	var targets []*Character
 	for _,v := range g.objects {
 		switch v.(type) {
 		case *Character:
-			enemies = append(enemies, v.(*Character))
+			targets = append(targets, v.(*Character))
 		}
 	}
-	return enemies
+	return targets
 }
 
 func (g *Game) getPlayers() []*Player {
-	var players []*Player
+	var targets []*Player
 	for _,v := range g.objects {
 		switch v.(type) {
 		case *Player:
-			players = append(players, v.(*Player))
+			targets = append(targets, v.(*Player))
 		}
 	}
-	return players
+	return targets
 }
 
 func (g *Game) getPhase() Phase { return g.phase }
