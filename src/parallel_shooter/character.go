@@ -26,15 +26,17 @@ type Character struct {
 	CharacterAttr
 	rand *rand.Rand
 	direction float64
+	commander Commander
 }
 
-func NewCharacter(o Object, ca CharacterAttr) *Character {
+func NewCharacter(o Object, ca CharacterAttr, cmd Commander) *Character {
 	c := &Character{
 		Object:        o,
 		CharacterAttr: ca,
 	}
 	source := rand.NewSource(time.Now().UnixNano())
 	c.rand = rand.New(source)
+	c.commander = cmd
 	return c
 }
 
@@ -42,15 +44,13 @@ func (c *Character) command(cmd Command) error {
 	switch cmd {
 	case KeySpace:
 		o := Object{game: c.game, point: c.point, height: 5, width: 5, phase: c.phase, images: c.shotImages}
-		shot := newShot(o, 1, NewVector(0, 5))
+		shot := newShot(o, 1, NewVector(math.Cos(c.direction)*5, math.Sin(c.direction)*5))
 		shot.setCenter(c.Area())
 		enemies := c.game.getPlayers()
 		for _, e := range enemies {
 			shot.addEnemy(e)
 		}
 		c.game.setObject(shot)
-		// case KeyCtrl:
-		// 	c.game.phaseShift()
 	}
 	return nil
 }
@@ -74,18 +74,8 @@ func (c *Character) Update() {
 		cmd = KeySpace
 	}
 	c.command(cmd)
-	var vector Vector
-	switch c.rand.Intn(4) {
-	case 0:
-		vector = NewVector(0,-1)
-	case 1:
-		vector = NewVector(1,0)
-	case 2:
-		vector = NewVector(0,1)
-	case 3:
-		vector = NewVector(-1,0)
-	}
-	c.move(vector)
+	c.commander.Update()
+	c.move(c.commander.getVector())
 }
 
 func (c *Character) Draw(img *ebiten.Image) error {

@@ -19,9 +19,16 @@ func NewEnemy1Strategy(g *Game, ef *Enemy1Factory) *Enemy1Strategy {
 func (s *Enemy1Strategy) run() StrategyStatus {
 	switch s.status {
 	case STRATEGY_INIT:
-		s.enemies = append(s.enemies, s.ef.NewObject(200,100,DARK_PHASE))
-		s.enemies = append(s.enemies, s.ef.NewObject(150,100,DARK_PHASE))
-		s.enemies = append(s.enemies, s.ef.NewObject(100,100,DARK_PHASE))
+		ec := NewEnemyCommander()
+		ec.addMotion(NewMotion(NewVector(1,1),100))
+		ec.addMotion(NewMotion(NewVector(1,-1),100))
+		ec.addMotion(NewMotion(NewVector(1,1),100))
+		ec.addMotion(NewMotion(NewVector(1,-1),100))
+		ec.addMotion(NewMotion(NewVector(1,1),100))
+		ec.addMotion(NewMotion(NewVector(1,-1),100))
+		ec.addMotion(NewMotion(NewVector(1,1),100))
+		ec.addMotion(NewMotion(NewVector(1,-1),100))
+		s.enemies = append(s.enemies, s.ef.NewObject(0,0,DARK_PHASE,ec))
 		for _,e := range s.enemies {
 			s.game.setObject(e)
 		}

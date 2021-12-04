@@ -1,5 +1,9 @@
 package parallel_shooter
 
+import (
+	"math"
+)
+
 type Boss1Strategy struct {
 	Strategy
 	game *Game
@@ -19,7 +23,9 @@ func NewBoss1Strategy(g *Game, ef *Boss1Factory) *Boss1Strategy {
 func (s *Boss1Strategy) run() StrategyStatus {
 	switch s.status {
 	case STRATEGY_INIT:
-		s.enemies = append(s.enemies, s.ef.NewBoss1(300,50,DARK_PHASE))
+		ec := NewEnemyCommander()
+		ec.addMotion(NewMotion(NewVector(0,0),math.MaxInt64))
+		s.enemies = append(s.enemies, s.ef.NewBoss1(300,50,DARK_PHASE,ec))
 		for _,e := range s.enemies {
 			s.game.setObject(e)
 		}
