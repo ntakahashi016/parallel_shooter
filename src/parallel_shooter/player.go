@@ -29,7 +29,7 @@ func NewPlayer(o Object, ca CharacterAttr, input *Input) *Player {
 func (p *Player) command(cmd Command) {
 	switch cmd {
 	case KeySpace:
-		o := Object{game: p.game, x: p.x, y: p.y, height: 5, width: 5, phase: p.phase, images: p.shotImages}
+		o := Object{game: p.game, point: p.point, height: 5, width: 5, phase: p.phase, images: p.shotImages}
 		shot := newShot(o, 1, NewVector(math.Cos(p.direction)*5, math.Sin(p.direction)*5))
 		shot.setCenter(p.Area())
 		enemies := p.game.getEnemies()
@@ -43,19 +43,16 @@ func (p *Player) command(cmd Command) {
 }
 
 func (p *Player) move(v Vector) {
-	x := p.x + int(v.X())
-	y := p.y + int(v.Y())
-	a := NewArea(NewPoint(x, y), NewPoint(x+p.width-1, y+p.height-1))
-	if p.x!=x || p.y!=y {
+	np := NewPoint(p.point.X() + int(v.X()), p.point.Y() + int(v.Y()))
+	a := NewArea(np, NewPoint(np.X()+p.width-1, np.Y()+p.height-1))
+	if !p.point.equal(np) {
 		p.direction = math.Atan2(v.Y(), v.X())
 	}
 	if p.game.insideOfScreen(a) {
-		p.x = x
-		p.y = y
+		p.point = np
 	} else {
 		rp := p.game.repointOnScreen(a)
-		p.x = rp.x
-		p.y = rp.y
+		p.point = rp
 	}
 }
 
@@ -78,10 +75,10 @@ func (p *Player) Draw(img *ebiten.Image) error {
 	return nil
 }
 
-func (p *Player) X() int { return p.x }
-func (p *Player) Y() int { return p.y }
+func (p *Player) X() int { return p.point.x }
+func (p *Player) Y() int { return p.point.y }
 func (p *Player) Area() *Area {
-	return NewArea(NewPoint(p.x, p.y), NewPoint(p.x+p.width-1, p.y+p.height-1))
+	return NewArea(NewPoint(p.point.X(), p.point.Y()), NewPoint(p.point.X()+p.width-1, p.point.Y()+p.height-1))
 }
 func (p *Player) Phase() Phase      { return p.phase }
 func (p *Player) setPhase(phase Phase) { p.phase = phase }

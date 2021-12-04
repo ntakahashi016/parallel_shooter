@@ -6,8 +6,7 @@ import (
 
 type Object struct {
 	game *Game
-	x int
-	y int
+	point *Point
 	height int
 	width int
 	phase Phase

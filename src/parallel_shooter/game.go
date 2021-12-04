@@ -109,8 +109,8 @@ func (g *Game) insideOfScreen(a *Area) bool {
 	return (a.p1.x >= 0 && width > a.p2.x && a.p1.y >= 0 && height > a.p2.y)
 }
 
-func (g *Game) repointOnScreen(a *Area) Point {
-	p := Point{x: a.p1.x, y: a.p1.y}
+func (g *Game) repointOnScreen(a *Area) *Point {
+	p := &Point{x: a.p1.x, y: a.p1.y}
 	if a.p1.x < 0 {
 		p.x = 0
 	} else if width <= a.p2.x {

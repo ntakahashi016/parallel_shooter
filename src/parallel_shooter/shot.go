@@ -27,10 +27,9 @@ func (s *Shot) Update() {
 		s.game.deleteObject(s)
 		return
 	}
-	prev_y := s.y
-	s.y += int(s.velocity.Y())
-	s.x += int(s.velocity.X())
-	hitArea := NewArea(NewPoint(s.x, prev_y), NewPoint(s.x+s.width, s.y))
+	prev_y := s.point.Y()
+	s.point = NewPoint(s.point.X() + int(s.velocity.X()), s.point.Y() + int(s.velocity.Y()))
+	hitArea := NewArea(NewPoint(s.point.X(), prev_y), NewPoint(s.point.X()+s.width, s.point.Y()))
 	for _, o := range s.enemies {
 		e, _ := o.(Common)
 		if e.Phase() == s.phase && hitArea.isHit(e.Area()) {
@@ -44,10 +43,10 @@ func (s *Shot) Draw(img *ebiten.Image) error {
 	return nil
 }
 
-func (s *Shot) X() int { return s.x }
-func (s *Shot) Y() int { return s.y }
+func (s *Shot) X() int { return s.point.X() }
+func (s *Shot) Y() int { return s.point.Y() }
 func (s *Shot) Area() *Area {
-	return NewArea(NewPoint(s.x, s.y), NewPoint(s.x+s.width, s.y+s.height))
+	return NewArea(NewPoint(s.point.X(), s.point.Y()), NewPoint(s.point.X()+s.width, s.point.Y()+s.height))
 }
 
 func (s *Shot) addEnemy(e interface{}) {
@@ -83,6 +82,8 @@ func (s *Shot) destroy() {
 }
 
 func (s *Shot) setCenter(a *Area) {
-	s.x = (a.p2.x - a.p1.x) / 2 + a.p1.x - s.width / 2
-	s.y = (a.p2.y - a.p1.y) / 2 + a.p1.y - s.height / 2
+	x := (a.p2.x - a.p1.x) / 2 + a.p1.x - s.width / 2
+	y := (a.p2.y - a.p1.y) / 2 + a.p1.y - s.height / 2
+	s.point = NewPoint(x,y)
 }
+

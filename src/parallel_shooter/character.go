@@ -41,7 +41,7 @@ func NewCharacter(o Object, ca CharacterAttr) *Character {
 func (c *Character) command(cmd Command) error {
 	switch cmd {
 	case KeySpace:
-		o := Object{game: c.game, x: c.x, y: c.y, height: 5, width: 5, phase: c.phase, images: c.shotImages}
+		o := Object{game: c.game, point: c.point, height: 5, width: 5, phase: c.phase, images: c.shotImages}
 		shot := newShot(o, 1, NewVector(0, 5))
 		shot.setCenter(c.Area())
 		enemies := c.game.getPlayers()
@@ -56,13 +56,11 @@ func (c *Character) command(cmd Command) error {
 }
 
 func (c *Character) move(v Vector) {
-	x := c.x + int(v.X())
-	y := c.y + int(v.Y())
-	if c.x!=x || c.y!=y {
+	np := NewPoint(c.point.X() + int(v.X()), c.point.Y() + int(v.Y()))
+	if !c.point.equal(np) {
 		c.direction = math.Atan2(v.Y(), v.X())
 	}
-	c.x = x
-	c.y = y
+	c.point = np
 }
 
 func (c *Character) Update() {
@@ -94,10 +92,10 @@ func (c *Character) Draw(img *ebiten.Image) error {
 	return nil
 }
 
-func (c *Character) X() int { return c.x }
-func (c *Character) Y() int { return c.y }
+func (c *Character) X() int { return c.point.X() }
+func (c *Character) Y() int { return c.point.Y() }
 func (c *Character) Area() *Area {
-	return NewArea(NewPoint(c.x, c.y), NewPoint(c.x+c.width, c.y+c.height))
+	return NewArea(NewPoint(c.point.X(), c.point.Y()), NewPoint(c.point.X()+c.width, c.point.Y()+c.height))
 }
 func (c *Character) Phase() Phase { return c.phase }
 
