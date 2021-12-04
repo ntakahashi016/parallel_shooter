@@ -6,6 +6,7 @@ import (
 )
 
 type PlayerFactory struct {
+	Factory
 	game *Game
 	imageSet ImageSet
 	shotImageSet ImageSet
@@ -33,7 +34,7 @@ func NewPlayerFactory(g *Game) *PlayerFactory {
 	return pf
 }
 
-func (pf *PlayerFactory) NewPlayer() *Player {
+func (pf *PlayerFactory) NewObject() *Player {
 	o := Object{game:pf.game, x: (int)(width/2), y: height-20, height: 10, width: 10, phase: pf.game.phase,images: &pf.imageSet}
 	ca := CharacterAttr{hp: 100,score: 0, value: 0, shotImages: &pf.shotImageSet}
 	return NewPlayer(o, ca, NewInput())

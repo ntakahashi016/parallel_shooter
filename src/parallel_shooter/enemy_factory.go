@@ -6,6 +6,7 @@ import (
 )
 
 type Enemy1Factory struct {
+	Factory
 	game *Game
 	imageSet ImageSet
 	shotImageSet ImageSet
