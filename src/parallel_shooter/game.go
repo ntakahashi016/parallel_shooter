@@ -3,7 +3,6 @@ package parallel_shooter
 import (
 	"image/color"
 	"github.com/hajimehoshi/ebiten/v2"
-	"sync"
 )
 
 const width = 640
@@ -11,8 +10,8 @@ const height = 480
 
 type Phase int
 const (
-	Light Phase = iota
-	Dark
+	LIGHT_PHASE Phase = iota
+	DARK_PHASE
 )
 
 type ImageSet struct {
@@ -23,56 +22,49 @@ type ImageSet struct {
 
 type Game struct{
 	objects []interface{}
-	mu sync.Mutex
-	mu_score sync.Mutex
 	phase Phase
 	clear bool
 	pf *PlayerFactory
 	ef *Enemy1Factory
 	sm *StageManager
-	score int
 }
 
 func NewGame() (*Game, error) {
 	g := &Game{}
-	g.phase = Dark
+	g.phase = DARK_PHASE
 	g.clear = false
-	g.score = 0
 	g.objects = []interface{}{}
 	g.pf = NewPlayerFactory(g)
-	g.objects = append(g.objects, g.pf.NewPlayer())
-	s1 := NewEnemy1Strategy(g,NewEnemy1Factory(g),Dark)
-	s2 := NewEnemy1Strategy(g,NewEnemy1Factory(g),Light)
-	s3 := NewBoss1Strategy(g,NewBoss1Factory(g),Dark)
+	g.objects = append(g.objects, g.pf.NewObject())
+	s1 := NewEnemy1Strategy(g,NewEnemy1Factory(g))
+	s2 := NewEnemy1Strategy(g,NewEnemy1Factory(g))
+	s3 := NewBoss1Strategy(g,NewBoss1Factory(g))
 	g.sm = NewStageManager(g,[]interface{}{s1,s2,s3})
-	go g.sm.run()
 	return g, nil
 }
 
 func (g *Game) Update() Mode {
+	g.sm.Update()
 	for _,v := range g.objects {
-		c := v.(common)
-		go c.run()
+		c := v.(Common)
+		c.Update()
 	}
 	if g.clear { return MODE_RESULT }
 	return MODE_GAME
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	if g.phase == Light {
+	if g.phase == LIGHT_PHASE {
 		screen.Fill(color.RGBA{0xff, 0xff, 0xff, 0xff})
 	} else {
 		screen.Fill(color.RGBA{0x00, 0x00, 0x00, 0xff})
 	}
 
 	for _, v := range g.objects {
-		g.mu.Lock()
-		c := v.(common)
-		// c.Draw(c.getImage())
+		c := v.(Common)
 		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(float64(c.getx()), float64(c.gety()))
-		screen.DrawImage(c.getImage(),op)
-		g.mu.Unlock()
+		op.GeoM.Translate(float64(c.X()), float64(c.Y()))
+		screen.DrawImage(c.Image(),op)
 	}
 }
 
@@ -83,33 +75,24 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 }
 
 func (g *Game) setObject(o interface{}) {
-	g.mu.Lock()
-	defer g.mu.Unlock()
 	g.objects = append(g.objects, o)
 }
 
 func (g *Game) setObjects(os []interface{}) {
-	g.mu.Lock()
-	defer g.mu.Unlock()
 	g.objects = append(g.objects, os...)
 }
 
 func (g *Game) deleteObject(o interface{}) {
-	g.mu.Lock()
-	defer g.mu.Unlock()
 	newObjects := []interface{}{}
 	for _,v := range g.objects {
-		if v == o {
-			continue
+		if v != o {
+			newObjects = append(newObjects, v)
 		}
-		newObjects = append(newObjects, v)
 	}
 	g.objects = newObjects
 }
 
 func (g *Game) isObjectAlive(o interface{}) bool {
-	g.mu.Lock()
-	defer g.mu.Unlock()
 	for _,v := range g.objects {
 		if v == o {
 			return true
@@ -119,21 +102,15 @@ func (g *Game) isObjectAlive(o interface{}) bool {
 }
 
 func (g *Game) outOfScreen(a *Area) bool {
-	if (a.p2.x < 0 || width <= a.p1.x) || (a.p2.y < 0 || height <= a.p1.y) {
-		return true
-	}
-	return false
+	return (a.p2.x < 0 || width <= a.p1.x || a.p2.y < 0 || height <= a.p1.y)
 }
 
 func (g *Game) insideOfScreen(a *Area) bool {
-	if (a.p1.x >= 0 && width > a.p2.x) && (a.p1.y >= 0 && height > a.p2.y) {
-		return true
-	}
-	return false
+	return (a.p1.x >= 0 && width > a.p2.x && a.p1.y >= 0 && height > a.p2.y)
 }
 
-func (g *Game) repointOnScreen(a *Area) Point {
-	p := Point{x: a.p1.x, y: a.p1.y}
+func (g *Game) repointOnScreen(a *Area) *Point {
+	p := &Point{x: a.p1.x, y: a.p1.y}
 	if a.p1.x < 0 {
 		p.x = 0
 	} else if width <= a.p2.x {
@@ -148,34 +125,34 @@ func (g *Game) repointOnScreen(a *Area) Point {
 }
 
 func (g *Game) getEnemies() []*Character {
-	var enemies []*Character
+	var targets []*Character
 	for _,v := range g.objects {
 		switch v.(type) {
 		case *Character:
-			enemies = append(enemies, v.(*Character))
+			targets = append(targets, v.(*Character))
 		}
 	}
-	return enemies
+	return targets
 }
 
 func (g *Game) getPlayers() []*Player {
-	var players []*Player
+	var targets []*Player
 	for _,v := range g.objects {
 		switch v.(type) {
 		case *Player:
-			players = append(players, v.(*Player))
+			targets = append(targets, v.(*Player))
 		}
 	}
-	return players
+	return targets
 }
 
 func (g *Game) getPhase() Phase { return g.phase }
 
 func (g *Game) phaseShift() {
-	if g.phase == Light {
-		g.phase = Dark
+	if g.phase == LIGHT_PHASE {
+		g.phase = DARK_PHASE
 	} else {
-		g.phase = Light
+		g.phase = LIGHT_PHASE
 	}
 	players := g.getPlayers()
 	for _,p := range players {
@@ -191,14 +168,3 @@ func (g *Game) gameover() {
 	g.clear = true
 }
 
-func (g *Game) getScore() int {
-	g.mu_score.Lock()
-	defer g.mu_score.Unlock()
-	return g.score
-}
-
-func (g *Game) addScore(s int) {
-	g.mu_score.Lock()
-	defer g.mu_score.Unlock()
-	g.score = s
-}

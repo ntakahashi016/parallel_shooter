@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"math"
 )
 
 type Characteristic interface {
@@ -19,11 +20,12 @@ type CharacterAttr struct {
 }
 
 type Character struct {
-	common
+	Common
 	Object
 	Characteristic
 	CharacterAttr
 	rand *rand.Rand
+	direction float64
 }
 
 func NewCharacter(o Object, ca CharacterAttr) *Character {
@@ -38,18 +40,10 @@ func NewCharacter(o Object, ca CharacterAttr) *Character {
 
 func (c *Character) command(cmd Command) error {
 	switch cmd {
-	case DirUp:
-		c.y = c.y - 1
-	case DirLeft:
-		c.x = c.x - 1
-	case DirRight:
-		c.x = c.x + 1
-	case DirDown:
-		c.y = c.y + 1
 	case KeySpace:
-		o := Object{game: c.game, x: c.x, y: c.y, height: 5, width: 5, phase: c.phase, images: c.shotImages}
+		o := Object{game: c.game, point: c.point, height: 5, width: 5, phase: c.phase, images: c.shotImages}
 		shot := newShot(o, 1, NewVector(0, 5))
-		shot.setCenter(c.getArea())
+		shot.setCenter(c.Area())
 		enemies := c.game.getPlayers()
 		for _, e := range enemies {
 			shot.addEnemy(e)
@@ -61,41 +55,49 @@ func (c *Character) command(cmd Command) error {
 	return nil
 }
 
-func (c *Character) Update() error {
-	return nil
+func (c *Character) move(v Vector) {
+	np := NewPoint(c.point.X() + int(v.X()), c.point.Y() + int(v.Y()))
+	if !c.point.equal(np) {
+		c.direction = math.Atan2(v.Y(), v.X())
+	}
+	c.point = np
 }
 
-func (c *Character) run() {
-	if c.game.outOfScreen(c.getArea()) {
+func (c *Character) Update() {
+	if c.game.outOfScreen(c.Area()) {
 		c.game.deleteObject(c)
 		return
 	}
 	var cmd Command
-	switch c.rand.Intn(5) {
+	switch c.rand.Intn(100) {
 	case 0:
-		cmd = DirUp
-	case 1:
-		cmd = DirRight
-	case 2:
-		cmd = DirDown
-	case 3:
-		cmd = DirLeft
-	case 4:
 		cmd = KeySpace
 	}
 	c.command(cmd)
+	var vector Vector
+	switch c.rand.Intn(4) {
+	case 0:
+		vector = NewVector(0,-1)
+	case 1:
+		vector = NewVector(1,0)
+	case 2:
+		vector = NewVector(0,1)
+	case 3:
+		vector = NewVector(-1,0)
+	}
+	c.move(vector)
 }
 
 func (c *Character) Draw(img *ebiten.Image) error {
 	return nil
 }
 
-func (c *Character) getx() int { return c.x }
-func (c *Character) gety() int { return c.y }
-func (c *Character) getArea() *Area {
-	return NewArea(NewPoint(c.x, c.y), NewPoint(c.x+c.width, c.y+c.height))
+func (c *Character) X() int { return c.point.X() }
+func (c *Character) Y() int { return c.point.Y() }
+func (c *Character) Area() *Area {
+	return NewArea(NewPoint(c.point.X(), c.point.Y()), NewPoint(c.point.X()+c.width, c.point.Y()+c.height))
 }
-func (c *Character) getPhase() Phase { return c.phase }
+func (c *Character) Phase() Phase { return c.phase }
 
 func (c *Character) hit(damage int) {
 	c.hp -= damage
@@ -105,18 +107,17 @@ func (c *Character) hit(damage int) {
 }
 
 func (c *Character) destroy() {
-	c.game.addScore(c.score)
 	c.game.deleteObject(c)
 }
 
-func (c *Character) getImage() *ebiten.Image {
+func (c *Character) Image() *ebiten.Image {
 	var i *ebiten.Image
 	gPhase := c.game.getPhase()
 	if c.phase == gPhase {
 		switch gPhase {
-		case Light:
+		case LIGHT_PHASE:
 			i = c.images.light
-		case Dark:
+		case DARK_PHASE:
 			i = c.images.dark
 		}
 	} else {

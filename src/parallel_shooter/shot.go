@@ -5,7 +5,7 @@ import (
 )
 
 type Shot struct {
-	common
+	Common
 	Object
 	velocity Vector
 	attack   int
@@ -22,36 +22,31 @@ func newShot(o Object, a int, v Vector) *Shot {
 	return s
 }
 
-func (s *Shot) run() {
-	if s.game.outOfScreen(s.getArea()) {
+func (s *Shot) Update() {
+	if s.game.outOfScreen(s.Area()) {
 		s.game.deleteObject(s)
 		return
 	}
-	prev_y := s.y
-	s.y += int(s.velocity.Y())
-	s.x += int(s.velocity.X())
-	hitArea := NewArea(NewPoint(s.x, prev_y), NewPoint(s.x+s.width, s.y))
+	prev_y := s.point.Y()
+	s.point = NewPoint(s.point.X() + int(s.velocity.X()), s.point.Y() + int(s.velocity.Y()))
+	hitArea := NewArea(NewPoint(s.point.X(), prev_y), NewPoint(s.point.X()+s.width, s.point.Y()))
 	for _, o := range s.enemies {
-		e, _ := o.(common)
-		if e.getPhase() == s.phase && hitArea.isHit(e.getArea()) {
+		e, _ := o.(Common)
+		if e.Phase() == s.phase && hitArea.isHit(e.Area()) {
 			e.(Characteristic).hit(s.attack)
 			s.destroy()
 		}
 	}
 }
 
-func (s *Shot) Update() error {
-	return nil
-}
-
 func (s *Shot) Draw(img *ebiten.Image) error {
 	return nil
 }
 
-func (s *Shot) getx() int { return s.x }
-func (s *Shot) gety() int { return s.y }
-func (s *Shot) getArea() *Area {
-	return NewArea(NewPoint(s.x, s.y), NewPoint(s.x+s.width, s.y+s.height))
+func (s *Shot) X() int { return s.point.X() }
+func (s *Shot) Y() int { return s.point.Y() }
+func (s *Shot) Area() *Area {
+	return NewArea(NewPoint(s.point.X(), s.point.Y()), NewPoint(s.point.X()+s.width, s.point.Y()+s.height))
 }
 
 func (s *Shot) addEnemy(e interface{}) {
@@ -66,14 +61,14 @@ func (s *Shot) deletEnemy(e interface{}) {
 	}
 }
 
-func (s *Shot) getImage() *ebiten.Image {
+func (s *Shot) Image() *ebiten.Image {
 	var i *ebiten.Image
 	gPhase := s.game.getPhase()
 	if s.phase == gPhase {
 		switch gPhase {
-		case Light:
+		case LIGHT_PHASE:
 			i = s.images.light
-		case Dark:
+		case DARK_PHASE:
 			i = s.images.dark
 		}
 	} else {
@@ -87,6 +82,8 @@ func (s *Shot) destroy() {
 }
 
 func (s *Shot) setCenter(a *Area) {
-	s.x = (a.p2.x - a.p1.x) / 2 + a.p1.x - s.width / 2
-	s.y = (a.p2.y - a.p1.y) / 2 + a.p1.y - s.height / 2
+	x := (a.p2.x - a.p1.x) / 2 + a.p1.x - s.width / 2
+	y := (a.p2.y - a.p1.y) / 2 + a.p1.y - s.height / 2
+	s.point = NewPoint(x,y)
 }
+

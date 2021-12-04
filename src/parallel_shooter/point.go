@@ -12,24 +12,9 @@ func NewPoint(x,y int) *Point {
 	return p
 }
 
-func (p *Point) direction(other *Point) *Point {
-	x := other.x - p.x
-	switch  {
-	case x > 0:
-		x=1
-	case x < 0:
-		x=-1
-	default:
-		x=0
-	}
-	y := other.y - p.y
-	switch {
-	case y > 0:
-		y=1
-	case y < 0:
-		y=-1
-	default:
-		y=0
-	}
-	return NewPoint(x,y)
+func (p *Point) X() int { return p.x }
+func (p *Point) Y() int { return p.y }
+
+func (p *Point) equal(other *Point) bool {
+	return p.x == other.X() && p.y == other.Y()
 }

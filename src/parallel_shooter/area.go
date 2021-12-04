@@ -7,16 +7,15 @@ type Area struct {
 
 func NewArea(p1 *Point, p2 *Point) *Area {
 	a := &Area{}
-	d := p1.direction(p2)
 	var x1,y1,x2,y2 int
-	if d.x >= 0 {
+	if (p2.x - p1.x) >= 0 {
 		x1 = p1.x
 		x2 = p2.x
 	} else {
 		x1 = p2.x
 		x2 = p1.x
 	}
-	if d.y >= 0 {
+	if (p2.y - p1.y) >= 0 {
 		y1 = p1.y
 		y2 = p2.y
 	} else {

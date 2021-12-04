@@ -8,40 +8,29 @@ import (
 type Command int
 
 const (
-	DirUp Command = iota
-	DirRight
-	DirDown
-	DirLeft
+	KeyNothing Command = iota
 	KeySpace
 	KeyCtrl
 )
 
 type Input struct {
-	keys []ebiten.Key
 }
 
 func NewInput() *Input {
 	return &Input{}
 }
 
-func (i *Input) Update() {
-	i.keys = inpututil.AppendPressedKeys(i.keys[:0])
+func (i *Input) Update(keys []ebiten.Key) []ebiten.Key {
+	return inpututil.AppendPressedKeys(keys)
 }
 
 func (i *Input) getCommands() []Command {
-	i.Update()
+	var keys []ebiten.Key
+	keys = i.Update(keys)
 	var commands []Command
-	for _, k := range i.keys {
+	for _, k := range keys {
 		var command Command
 		switch k {
-		case ebiten.KeyArrowUp:
-			command = DirUp
-		case ebiten.KeyArrowLeft:
-			command = DirLeft
-		case ebiten.KeyArrowRight:
-			command = DirRight
-		case ebiten.KeyArrowDown:
-			command = DirDown
 		case ebiten.KeySpace:
 			command = KeySpace
 		case ebiten.KeyControl:
@@ -55,9 +44,10 @@ func (i *Input) getCommands() []Command {
 }
 
 func (i *Input) getVector() Vector {
-	i.Update()
+	var keys []ebiten.Key
+	keys = i.Update(keys)
 	v := NewVector(0, 0)
-	for _, k := range i.keys {
+	for _, k := range keys {
 		switch k {
 		case ebiten.KeyArrowUp:
 			v = v.Add(NewVector(0, -1))

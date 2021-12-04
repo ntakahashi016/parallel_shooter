@@ -12,22 +12,23 @@ func NewStageManager(g *Game, s []interface{}) *StageManager {
 	return sm
 }
 
-func (sm *StageManager) run() {
-	results := []bool{}
-	ch := make(chan bool)
+func (sm *StageManager) Update() {
+	results := []StrategyStatus{}
+	pre_status := STRATEGY_INIT
 	for _,s := range sm.strategies {
 		strategy,_ := s.(Strategy)
-		go strategy.run(ch)
-		res := <-ch
-		results = append(results, res)
-	}
-	result := true
-	for _,r := range results {
-		if !r {
-			result = false
+		status := strategy.Status()
+		if pre_status == STRATEGY_CLEAR || pre_status == STRATEGY_INIT {
+			status = strategy.run()
+			pre_status = status
 		}
+		results = append(results, status)
 	}
-	if result {
+	clear := true
+	for _,r := range results {
+		clear = clear && r == STRATEGY_CLEAR
+	}
+	if clear {
 		sm.game.stageClear()
 	}
 }

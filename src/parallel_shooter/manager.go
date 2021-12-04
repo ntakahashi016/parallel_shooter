@@ -15,8 +15,7 @@ type updatable interface {
 type Mode int
 
 const (
-	MODE_INIT Mode = iota
-	MODE_TITLE
+	MODE_TITLE Mode = iota
 	MODE_GAME
 	MODE_RESULT
 )
@@ -24,52 +23,36 @@ const (
 type Manager struct {
 	mode Mode
 	pre_mode Mode
-	next_mode Mode
 	current interface{}
 }
 
 func NewManager() (*Manager, error) {
 	m := &Manager{}
-	m.mode = MODE_INIT
-	m.pre_mode = MODE_INIT
-	m.next_mode = MODE_INIT
+	m.mode = MODE_TITLE
 	m.current, _ = NewTitle()
 	return m, nil
 }
 
 func (m *Manager) Update() error {
-	var score int
-	switch m.next_mode {
-	case MODE_INIT:
-		m.next_mode = MODE_TITLE
+	next := m.current.(updatable).Update()
+	switch m.mode {
 	case MODE_TITLE:
-		if m.pre_mode != m.next_mode {
-			m.pre_mode = m.mode
-			m.mode = m.next_mode
-			m.current,_ = NewTitle()
-		}
-		m.next_mode = m.current.(updatable).Update()
-	case MODE_GAME:
-		if m.pre_mode != m.next_mode {
-			m.pre_mode = m.mode
-			m.mode = m.next_mode
+		switch next {
+		case MODE_GAME:
 			m.current,_ = NewGame()
 		}
-		m.next_mode = m.current.(updatable).Update()
-	case MODE_RESULT:
-		if m.pre_mode != m.next_mode {
-			m.pre_mode = m.mode
-			m.mode = m.next_mode
-			if m.pre_mode == MODE_GAME {
-				game := m.current.(*Game)
-				score = game.getScore()
-			}
+	case MODE_GAME:
+		switch next {
+		case MODE_RESULT:
 			m.current,_ = NewResult()
-			result := m.current.(*Result)
-			result.setScore(score)
 		}
-		m.next_mode = m.current.(updatable).Update()
+	case MODE_RESULT:
+		switch next {
+		case MODE_TITLE:
+			m.current,_ = NewTitle()
+		}
 	}
+	m.mode = next
 	return nil
 }
 

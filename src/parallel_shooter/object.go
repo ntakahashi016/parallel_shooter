@@ -6,22 +6,21 @@ import (
 
 type Object struct {
 	game *Game
-	x int
-	y int
+	point *Point
 	height int
 	width int
 	phase Phase
 	images *ImageSet
 }
 
-type common interface {
-	run()
+type Common interface {
+	Update()
 
 	Draw(img *ebiten.Image) error
-	getx() int
-	gety() int
-	getArea() *Area
-	getPhase() Phase
-	getImage() *ebiten.Image
+	X() int
+	Y() int
+	Area() *Area
+	Phase() Phase
+	Image() *ebiten.Image
 }
 
