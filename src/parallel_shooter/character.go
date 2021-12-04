@@ -65,11 +65,7 @@ func (c *Character) move(v Vector) {
 	c.y = y
 }
 
-func (c *Character) Update() error {
-	return nil
-}
-
-func (c *Character) run() {
+func (c *Character) Update() {
 	if c.game.outOfScreen(c.Area()) {
 		c.game.deleteObject(c)
 		return

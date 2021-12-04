@@ -15,7 +15,7 @@ type Object struct {
 }
 
 type Common interface {
-	run()
+	Update()
 
 	Draw(img *ebiten.Image) error
 	X() int

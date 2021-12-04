@@ -22,7 +22,7 @@ func newShot(o Object, a int, v Vector) *Shot {
 	return s
 }
 
-func (s *Shot) run() {
+func (s *Shot) Update() {
 	if s.game.outOfScreen(s.Area()) {
 		s.game.deleteObject(s)
 		return
@@ -38,10 +38,6 @@ func (s *Shot) run() {
 			s.destroy()
 		}
 	}
-}
-
-func (s *Shot) Update() error {
-	return nil
 }
 
 func (s *Shot) Draw(img *ebiten.Image) error {

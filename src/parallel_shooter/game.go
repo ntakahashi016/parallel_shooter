@@ -47,7 +47,7 @@ func (g *Game) Update() Mode {
 	g.sm.Update()
 	for _,v := range g.objects {
 		c := v.(Common)
-		c.run()
+		c.Update()
 	}
 	if g.clear { return MODE_RESULT }
 	return MODE_GAME

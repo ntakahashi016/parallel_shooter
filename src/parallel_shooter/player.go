@@ -59,11 +59,7 @@ func (p *Player) move(v Vector) {
 	}
 }
 
-func (p *Player) Update() error {
-	return nil
-}
-
-func (p *Player) run() {
+func (p *Player) Update() {
 	commands := p.input.getCommands()
 	// for _, command := range commands {
 	// 	p.command(command)
