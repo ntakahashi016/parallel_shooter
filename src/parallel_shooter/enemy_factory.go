@@ -34,9 +34,9 @@ func NewEnemy1Factory(g *Game) *Enemy1Factory {
 	return ef
 }
 
-func (ef *Enemy1Factory) NewObject(x,y int, p Phase) *Character {
+func (ef *Enemy1Factory) NewObject(x,y int, p Phase, c Commander) *Character {
 	o := Object{game:ef.game, point: NewPoint(x, y), height:10, width:10, phase: p, images: &ef.imageSet}
-	ca := CharacterAttr{hp: 10, score: 0, value: 100, shotImages: &ef.shotImageSet}
-	return NewCharacter(o, ca)
+	ca := CharacterAttr{hp: 1, score: 0, value: 100, shotImages: &ef.shotImageSet}
+	return NewCharacter(o, ca, c)
 }
 
