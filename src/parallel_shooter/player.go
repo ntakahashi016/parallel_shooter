@@ -10,9 +10,11 @@ type Player struct {
 	Object
 	Characteristic
 	CharacterAttr
+	Owner
 	input *Input
 	velocity Vector
 	direction float64
+	weapon Weapon
 }
 
 func NewPlayer(o Object, ca CharacterAttr, input *Input) *Player {
@@ -23,27 +25,14 @@ func NewPlayer(o Object, ca CharacterAttr, input *Input) *Player {
 	pl.input = input
 	pl.velocity = NewVector(0,0)
 	pl.direction = 1.5 * math.Pi
+	pl.weapon = NewWeapon_1(pl, 10, 10, 1, 3, 1, 100, 300, pl.shotImages)
 	return pl
 }
 
 func (p *Player) command(cmd Command) {
 	switch cmd {
 	case KeySpace:
-		o1 := Object{game: p.game, point: p.point, height: 5, width: 5, phase: p.phase, images: p.shotImages}
-		s1 := newShot(o1, 1, NewVector(math.Cos(p.direction)*5, math.Sin(p.direction)*5))
-		o2 := Object{game: p.game, point: p.point, height: 5, width: 5, phase: p.phase, images: p.shotImages}
-		s2 := newShot(o2, 1, NewVector(math.Cos(p.direction - 1.0/12.0 * math.Pi)*5, math.Sin(p.direction - 1.0/12.0 * math.Pi)*5))
-		o3 := Object{game: p.game, point: p.point, height: 5, width: 5, phase: p.phase, images: p.shotImages}
-		s3 := newShot(o3, 1, NewVector(math.Cos(p.direction + 1.0/12.0 * math.Pi)*5, math.Sin(p.direction + 1.0/12.0 * math.Pi)*5))
-		shots := []*Shot{s1,s2,s3}
-		for _,shot := range shots {
-			shot.setCenter(p.Center())
-			enemies := p.game.getEnemies()
-			for _, e := range enemies {
-				shot.addEnemy(e)
-			}
-			p.game.setObject(shot)
-		}
+		p.weapon.shot()
 	case KeyCtrl:
 		p.game.phaseShift()
 	}
@@ -120,3 +109,6 @@ func (p *Player) Center() *Point {
 	y := (a.p2.y - a.p1.y) / 2 + a.p1.y
 	return NewPoint(x,y)
 }
+
+func (p *Player) Game() *Game { return p.game }
+func (p *Player) Direction() float64 { return p.direction }

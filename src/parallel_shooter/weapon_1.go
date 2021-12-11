@@ -1,40 +1,68 @@
 package parallel_shooter
 
+import (
+	"math"
+	"time"
+)
+
 type weapon_1 struct {
 	Weapon
-	owner *Common
+	owner Owner
 	attack int
 	speed float64
+	number int
+	burst int
+	width float64
+	interval time.Duration
+	reload time.Duration
 	shotImages *ImageSet
+	status WeaponStatus
 }
 
-type NewWeapon_1(o *Common, a int, s float64, i *ImageSet) {
+func NewWeapon_1(o Owner, a int, s float64, n int, b int, wi float64, i,r time.Duration, img *ImageSet) Weapon {
 	w := &weapon_1{}
 	w.owner = o
 	w.attack = a
 	w.speed = s
-	w.shotImages = i
+	w.number = n
+	w.burst = b
+	w.width = wi
+	w.interval = i
+	w.reload = r
+	w.shotImages = img
+	w.status = WEAPON_READY
 	return w
 }
 
 func (w *weapon_1) shot() {
-	game := w.owner.game
-	point := w.owner.point
-	phase := w.owner.phase
-	direction := w.owner.direction
-	o1 := Object{game: game, point: point, height: 5, width: 5, phase: phase, images: w.shotImages}
-	s1 := newShot(o1, 1, NewVector(math.Cos(direction) * w.speed, math.Sin(direction) * w.speed))
-	o2 := Object{game: game, point: point, height: 5, width: 5, phase: phase, images: w.shotImages}
-	s2 := newShot(o2, 1, NewVector(math.Cos(direction - 1.0/12.0 * math.Pi) * w.speed, math.Sin(direction - 1.0/12.0 * math.Pi) * w.speed))
-	o3 := Object{game: game, point: point, height: 5, width: 5, phase: phase, images: w.shotImages}
-	s3 := newShot(o3, 1, NewVector(math.Cos(direction + 1.0/12.0 * math.Pi) * w.speed, math.Sin(direction + 1.0/12.0 * math.Pi) * w.speed))
-	shots := []*Shot{s1,s2,s3}
-	for _,shot := range shots {
-		shot.setCenter(w.owner.Center())
-		enemies := game.getEnemies()
-		for _, e := range enemies {
-			shot.addEnemy(e)
-		}
-		game.setObject(shot)
+	switch w.status {
+	case WEAPON_READY:
+		game := w.owner.Game()
+		point := w.owner.Center()
+		phase := w.owner.Phase()
+		direction := w.owner.Direction()
+		shots := []*Shot{}
+		w.status = WEAPON_INTERVAL
+		go func() {
+			for b := 0; b < w.burst; b++ {
+				for i := 0; i < w.number; i++ {
+					o := Object{game: game, point: point, height: 5, width: 5, phase: phase, images: w.shotImages}
+					s := newShot(o, w.attack, NewVector(math.Cos(direction) * w.speed, math.Sin(direction) * w.speed))
+					shots = append(shots, s)
+				}
+				for _,shot := range shots {
+					shot.setCenter(w.owner.Center())
+					enemies := game.getEnemies()
+					for _, e := range enemies {
+						shot.addEnemy(e)
+					}
+					game.setObject(shot)
+				}
+				time.Sleep(w.interval * time.Millisecond)
+			}
+			w.status = WEAPON_RELOADING
+			time.Sleep(w.reload * time.Millisecond)
+			w.status = WEAPON_READY
+		}()
 	}
 }
