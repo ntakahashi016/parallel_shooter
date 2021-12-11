@@ -58,7 +58,7 @@ func (c *Character) command(cmd Command) error {
 }
 
 func (c *Character) move(v Vector) {
-	np := NewPoint(c.point.X() + int(v.X()), c.point.Y() + int(v.Y()))
+	np := NewPoint(c.point.X() + v.X(), c.point.Y() + v.Y())
 	if !c.point.equal(np) {
 		c.direction = math.Atan2(v.Y(), v.X())
 	}
@@ -84,10 +84,10 @@ func (c *Character) Draw(img *ebiten.Image) error {
 	return nil
 }
 
-func (c *Character) X() int { return c.point.X() }
-func (c *Character) Y() int { return c.point.Y() }
+func (c *Character) X() int { return int(c.point.X()) }
+func (c *Character) Y() int { return int(c.point.Y()) }
 func (c *Character) Area() *Area {
-	return NewArea(NewPoint(c.point.X(), c.point.Y()), NewPoint(c.point.X()+c.width, c.point.Y()+c.height))
+	return NewArea(NewPoint(c.point.X(), c.point.Y()), NewPoint(c.point.X()+float64(c.width), c.point.Y()+float64(c.height)))
 }
 func (c *Character) Phase() Phase { return c.phase }
 
@@ -120,7 +120,7 @@ func (c *Character) Image() *ebiten.Image {
 
 func (c *Character) Center() *Point {
 	a := c.Area()
-	x := (a.p2.x - a.p1.x) / 2 + a.p1.x - c.width / 2
-	y := (a.p2.y - a.p1.y) / 2 + a.p1.y - c.height / 2
+	x := (a.p2.x - a.p1.x) / 2 + a.p1.x - float64(c.width) / 2
+	y := (a.p2.y - a.p1.y) / 2 + a.p1.y - float64(c.height) / 2
 	return NewPoint(x,y)
 }

@@ -43,8 +43,8 @@ func (p *Player) command(cmd Command) {
 }
 
 func (p *Player) move(v Vector) {
-	np := NewPoint(p.point.X() + int(v.X()), p.point.Y() + int(v.Y()))
-	a := NewArea(np, NewPoint(np.X()+p.width-1, np.Y()+p.height-1))
+	np := NewPoint(p.point.X() + v.X(), p.point.Y() + v.Y())
+	a := NewArea(np, NewPoint(np.X()+float64(p.width-1), np.Y()+float64(p.height-1)))
 	if !p.point.equal(np) {
 		p.direction = math.Atan2(v.Y(), v.X())
 	}
@@ -72,10 +72,10 @@ func (p *Player) Draw(img *ebiten.Image) error {
 	return nil
 }
 
-func (p *Player) X() int { return p.point.x }
-func (p *Player) Y() int { return p.point.y }
+func (p *Player) X() int { return int(p.point.X()) }
+func (p *Player) Y() int { return int(p.point.Y()) }
 func (p *Player) Area() *Area {
-	return NewArea(NewPoint(p.point.X(), p.point.Y()), NewPoint(p.point.X()+p.width-1, p.point.Y()+p.height-1))
+	return NewArea(NewPoint(p.point.X(), p.point.Y()), NewPoint(p.point.X()+float64(p.width-1), p.point.Y()+float64(p.height-1)))
 }
 func (p *Player) Phase() Phase      { return p.phase }
 func (p *Player) setPhase(phase Phase) { p.phase = phase }
@@ -109,7 +109,7 @@ func (p *Player) Image() *ebiten.Image {
 
 func (p *Player) Center() *Point {
 	a := p.Area()
-	x := (a.p2.x - a.p1.x) / 2 + a.p1.x - p.width / 2
-	y := (a.p2.y - a.p1.y) / 2 + a.p1.y - p.height / 2
+	x := (a.p2.x - a.p1.x) / 2 + a.p1.x - float64(p.width) / 2
+	y := (a.p2.y - a.p1.y) / 2 + a.p1.y - float64(p.height) / 2
 	return NewPoint(x,y)
 }

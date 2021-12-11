@@ -39,7 +39,7 @@ func NewBoss1Factory(g *Game) *Boss1Factory {
 }
 
 func (ef *Boss1Factory) NewBoss1(x,y int, p Phase, c Commander) *Character {
-	o := Object{game:ef.game, point: NewPoint(x, y), height:BOSS1HEIGHT, width:BOSS1WIDTH, phase: p, images: &ef.imageSet}
+	o := Object{game:ef.game, point: NewPoint(float64(x),float64(y)), height:BOSS1HEIGHT, width:BOSS1WIDTH, phase: p, images: &ef.imageSet}
 	ca := CharacterAttr{hp: 100, score: 0, value: 1000, shotImages: &ef.shotImageSet}
 	return NewCharacter(o, ca, c)
 }

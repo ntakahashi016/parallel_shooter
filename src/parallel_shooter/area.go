@@ -7,7 +7,7 @@ type Area struct {
 
 func NewArea(p1 *Point, p2 *Point) *Area {
 	a := &Area{}
-	var x1,y1,x2,y2 int
+	var x1,y1,x2,y2 float64
 	if (p2.x - p1.x) >= 0 {
 		x1 = p1.x
 		x2 = p2.x
