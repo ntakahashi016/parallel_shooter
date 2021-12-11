@@ -48,7 +48,7 @@ func (c *Character) command(cmd Command) error {
 		e := enemies[0]
 		radian := c.Center().direction(e.Center())
 		shot := newShot(o, 1, NewVector(math.Cos(radian)*5, math.Sin(radian)*5))
-		shot.setCenter(c.Area())
+		shot.setCenter(c.Center())
 		for _, e := range enemies {
 			shot.addEnemy(e)
 		}
@@ -120,7 +120,7 @@ func (c *Character) Image() *ebiten.Image {
 
 func (c *Character) Center() *Point {
 	a := c.Area()
-	x := (a.p2.x - a.p1.x) / 2 + a.p1.x - float64(c.width) / 2
-	y := (a.p2.y - a.p1.y) / 2 + a.p1.y - float64(c.height) / 2
+	x := (a.p2.x - a.p1.x) / 2 + a.p1.x
+	y := (a.p2.y - a.p1.y) / 2 + a.p1.y
 	return NewPoint(x,y)
 }

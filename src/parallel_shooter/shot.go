@@ -81,15 +81,15 @@ func (s *Shot) destroy() {
 	s.game.deleteObject(s)
 }
 
-func (s *Shot) setCenter(a *Area) {
-	x := (a.p2.x - a.p1.x) / 2 + a.p1.x - float64(s.width) / 2
-	y := (a.p2.y - a.p1.y) / 2 + a.p1.y - float64(s.height) / 2
+func (s *Shot) setCenter(p *Point) {
+	x := p.X() - float64(s.width) / 2
+	y := p.Y() - float64(s.height) / 2
 	s.point = NewPoint(x,y)
 }
 
 func (s *Shot) Center() *Point {
 	a := s.Area()
-	x := (a.p2.x - a.p1.x) / 2 + a.p1.x - float64(s.width) / 2
-	y := (a.p2.y - a.p1.y) / 2 + a.p1.y - float64(s.height) / 2
+	x := (a.p2.x - a.p1.x) / 2 + a.p1.x
+	y := (a.p2.y - a.p1.y) / 2 + a.p1.y
 	return NewPoint(x,y)
 }

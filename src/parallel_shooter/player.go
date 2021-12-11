@@ -31,7 +31,7 @@ func (p *Player) command(cmd Command) {
 	case KeySpace:
 		o := Object{game: p.game, point: p.point, height: 5, width: 5, phase: p.phase, images: p.shotImages}
 		shot := newShot(o, 1, NewVector(math.Cos(p.direction)*5, math.Sin(p.direction)*5))
-		shot.setCenter(p.Area())
+		shot.setCenter(p.Center())
 		enemies := p.game.getEnemies()
 		for _, e := range enemies {
 			shot.addEnemy(e)
@@ -109,7 +109,7 @@ func (p *Player) Image() *ebiten.Image {
 
 func (p *Player) Center() *Point {
 	a := p.Area()
-	x := (a.p2.x - a.p1.x) / 2 + a.p1.x - float64(p.width) / 2
-	y := (a.p2.y - a.p1.y) / 2 + a.p1.y - float64(p.height) / 2
+	x := (a.p2.x - a.p1.x) / 2 + a.p1.x
+	y := (a.p2.y - a.p1.y) / 2 + a.p1.y
 	return NewPoint(x,y)
 }
