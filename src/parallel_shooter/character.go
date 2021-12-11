@@ -44,9 +44,11 @@ func (c *Character) command(cmd Command) error {
 	switch cmd {
 	case KeySpace:
 		o := Object{game: c.game, point: c.point, height: 5, width: 5, phase: c.phase, images: c.shotImages}
-		shot := newShot(o, 1, NewVector(math.Cos(c.direction)*5, math.Sin(c.direction)*5))
-		shot.setCenter(c.Area())
 		enemies := c.game.getPlayers()
+		e := enemies[0]
+		radian := c.Center().direction(e.Center())
+		shot := newShot(o, 1, NewVector(math.Cos(radian)*5, math.Sin(radian)*5))
+		shot.setCenter(c.Area())
 		for _, e := range enemies {
 			shot.addEnemy(e)
 		}
@@ -114,4 +116,11 @@ func (c *Character) Image() *ebiten.Image {
 		i = c.images.gray
 	}
 	return i
+}
+
+func (c *Character) Center() *Point {
+	a := c.Area()
+	x := (a.p2.x - a.p1.x) / 2 + a.p1.x - c.width / 2
+	y := (a.p2.y - a.p1.y) / 2 + a.p1.y - c.height / 2
+	return NewPoint(x,y)
 }

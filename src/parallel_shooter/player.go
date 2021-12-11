@@ -106,3 +106,10 @@ func (p *Player) Image() *ebiten.Image {
 	}
 	return i
 }
+
+func (p *Player) Center() *Point {
+	a := p.Area()
+	x := (a.p2.x - a.p1.x) / 2 + a.p1.x - p.width / 2
+	y := (a.p2.y - a.p1.y) / 2 + a.p1.y - p.height / 2
+	return NewPoint(x,y)
+}
