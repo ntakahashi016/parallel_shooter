@@ -29,14 +29,21 @@ func NewPlayer(o Object, ca CharacterAttr, input *Input) *Player {
 func (p *Player) command(cmd Command) {
 	switch cmd {
 	case KeySpace:
-		o := Object{game: p.game, point: p.point, height: 5, width: 5, phase: p.phase, images: p.shotImages}
-		shot := newShot(o, 1, NewVector(math.Cos(p.direction)*5, math.Sin(p.direction)*5))
-		shot.setCenter(p.Center())
-		enemies := p.game.getEnemies()
-		for _, e := range enemies {
-			shot.addEnemy(e)
+		o1 := Object{game: p.game, point: p.point, height: 5, width: 5, phase: p.phase, images: p.shotImages}
+		s1 := newShot(o1, 1, NewVector(math.Cos(p.direction)*5, math.Sin(p.direction)*5))
+		o2 := Object{game: p.game, point: p.point, height: 5, width: 5, phase: p.phase, images: p.shotImages}
+		s2 := newShot(o2, 1, NewVector(math.Cos(p.direction - 1.0/12.0 * math.Pi)*5, math.Sin(p.direction - 1.0/12.0 * math.Pi)*5))
+		o3 := Object{game: p.game, point: p.point, height: 5, width: 5, phase: p.phase, images: p.shotImages}
+		s3 := newShot(o3, 1, NewVector(math.Cos(p.direction + 1.0/12.0 * math.Pi)*5, math.Sin(p.direction + 1.0/12.0 * math.Pi)*5))
+		shots := []*Shot{s1,s2,s3}
+		for _,shot := range shots {
+			shot.setCenter(p.Center())
+			enemies := p.game.getEnemies()
+			for _, e := range enemies {
+				shot.addEnemy(e)
+			}
+			p.game.setObject(shot)
 		}
-		p.game.setObject(shot)
 	case KeyCtrl:
 		p.game.phaseShift()
 	}
