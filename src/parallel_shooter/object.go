@@ -22,5 +22,6 @@ type Common interface {
 	Area() *Area
 	Phase() Phase
 	Image() *ebiten.Image
+	Center() *Point
 }
 
