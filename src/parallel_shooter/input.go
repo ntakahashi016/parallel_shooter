@@ -32,7 +32,9 @@ func (i *Input) getCommands() []Command {
 		var command Command
 		switch k {
 		case ebiten.KeySpace:
-			command = KeySpace
+			if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+				command = KeySpace
+			}
 		case ebiten.KeyControl:
 			if inpututil.IsKeyJustPressed(ebiten.KeyControl) {
 				command = KeyCtrl
