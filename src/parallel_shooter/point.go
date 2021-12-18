@@ -27,3 +27,7 @@ func (p *Point) direction(other *Point) float64 {
 	radian := math.Atan2(other.Y() - p.Y(), other.X() - p.X())
 	return radian
 }
+
+func (p *Point) offset(v Vector) *Point {
+	return NewPoint(p.X() + v.X(), p.Y() + v.Y())
+}

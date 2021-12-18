@@ -25,3 +25,9 @@ type Common interface {
 	Center() *Point
 }
 
+type Owner interface {
+	Game() *Game
+	Center() *Point
+	Phase() Phase
+	Direction() float64
+}
